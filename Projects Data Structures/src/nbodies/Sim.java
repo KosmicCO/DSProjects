@@ -6,6 +6,7 @@
 package nbodies;
 
 import edu.princeton.cs.algs4.In;
+import edu.princeton.cs.algs4.StdDraw;
 import java.util.ArrayList;
 
 /**
@@ -14,31 +15,45 @@ import java.util.ArrayList;
  */
 public class Sim {
     
+    public static final String BACK = "nbody/nbody/starfield.jpg";
+    
     public static double duration;
     public static double increment;
     public static double uniRadius;
     public static ArrayList<Body> bodies;
     
     public static void main(String[] args) {
-        bodies = initFromFile(args);
+        String[] gggggg = {"1.0", "1.0", "planets.txt"};
+        initFromFile(gggggg);
+        draw();
+        
     }
     
-    public static ArrayList<Body> initFromFile(String[] args){
-        try{
+    public static void draw(){
+        StdDraw.picture(0, 0, BACK, 2, 2);
+        bodies.forEach(b -> draw());
+    }
+    
+    public static void initFromFile(String[] args){
+        //try{
             duration = Double.parseDouble(args[0]);
             increment = Double.parseDouble(args[1]);
             In fileInput = new In("nbody/nbody/" + args[2]);
             String[] lines = fileInput.readAllLines();
             int planNum = Integer.parseInt(lines[0].replaceAll("\\s", ""));
-            uniRadius = Integer.parseInt(lines[1].replaceAll("\\s", ""));
-            ArrayList<Body> bodies = new ArrayList();
+            uniRadius = Double.parseDouble(lines[1].replaceAll("\\s", ""));
+            bodies = new ArrayList();
             for (int i = 0; i < planNum; i++) {
-                bodies.add(new Body(lines[i + 2]));
+                double[] info = new double[5];
+                for (int j = 0; j < 5; j++) {
+                    info[j] = fileInput.readDouble(); //thats now how it works
+                }
+                bodies.add(new Body(info, fileInput.readString()));
             }
-            return bodies;
-        }catch(NumberFormatException nfe){
-            System.out.println("Needs double input");
-        }
-        return null;
+//        }catch(NumberFormatException nfe){
+//            System.out.println("Needs double input");
+//        }catch(Exception e){
+//            System.out.println(e);
+//        }
     }
 }
