@@ -3,32 +3,28 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package bag_stack_queue;
-
-import java.util.Iterator;
+package utils;
 
 /**
  *
  * @author cbarnum18
  */
-public class Stack<E> implements Cloneable, Iterable {
-    
-    private Node prev;
-    private int length;
-    
-    @Override
-    public Iterator iterator(){
-        return null;
-    }
-    
-    private class Node<E> {
+public class Node<E> {
 
-        private final Node next;
-        private final E data;
+        private Node next;
+        private E data;
 
         public Node(Node next, E data) {
             this.next = next;
             this.data = data;
+        }
+        
+        public void setData(E data){
+            this.data = data;
+        }
+        
+        public void setNext(Node next){
+            this.next = next;
         }
         
         public E getData(){
@@ -39,4 +35,3 @@ public class Stack<E> implements Cloneable, Iterable {
             return next;
         }
     }
-}

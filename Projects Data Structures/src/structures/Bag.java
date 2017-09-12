@@ -3,9 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package bag_stack_queue;
+package structures;
 
 import java.util.Iterator;
+import utils.Node;
 
 /**
  *
@@ -15,16 +16,16 @@ import java.util.Iterator;
 public class Bag<E> implements Cloneable, Iterable {
 
     private Node<E> startNode;
-    private int length;
+    private int size;
     
     public Bag(){
         startNode = null;
-        length = 0;
+        size = 0;
     }
     
     public void add(E item){
         startNode = new Node(startNode, item);
-        length++;
+        ++size;
     }
     
     @Override
@@ -33,30 +34,15 @@ public class Bag<E> implements Cloneable, Iterable {
         return new BagIterator(startNode);
     }
 
-    private class Node<E> {
-
-        private final Node next;
-        private final E data;
-
-        public Node(Node next, E data) {
-            this.next = next;
-            this.data = data;
-        }
-        
-        public E getData(){
-            return data;
-        }
-        
-        public Node getNext(){
-            return next;
-        }
+    public int getSize(){
+        return size;
     }
     
     private class BagIterator<E> implements Iterator {
 
-        private Node next;
+        private Node<E> next;
         
-        public BagIterator(Node start){
+        public BagIterator(Node<E> start){
             next = start;
         }
         
@@ -71,6 +57,5 @@ public class Bag<E> implements Cloneable, Iterable {
             next = next.getNext();
             return (E) ret;
         }
-        
     }
 }
