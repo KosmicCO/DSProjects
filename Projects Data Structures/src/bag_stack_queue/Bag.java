@@ -10,6 +10,7 @@ import java.util.Iterator;
 /**
  *
  * @author cbarnum18
+ * @param <E>
  */
 public class Bag<E> implements Cloneable, Iterable {
 
