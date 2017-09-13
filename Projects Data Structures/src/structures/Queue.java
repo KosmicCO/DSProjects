@@ -11,6 +11,7 @@ import utils.Node;
 /**
  *
  * @author cbarnum18
+ * @param <E>
  */
 public class Queue<E> implements Cloneable, Iterable {
 
@@ -41,10 +42,39 @@ public class Queue<E> implements Cloneable, Iterable {
         }
         return null;
     }
+    
+    @Override
+    public Queue<E> clone(){
+        return null;
+    }
+    
+    public int getSize(){
+        return size;
+    }
 
     @Override
     public Iterator iterator() {
-        return null;
+        return new QueueIterator(this);
     }
+    
+    private class QueueIterator<E> implements Iterator{
+        
+        private Queue queue;
+        
+        public QueueIterator(Queue queue){
+            this.queue = queue;
+        }
 
+        @Override
+        public boolean hasNext() {
+            return queue.size > 0;
+        }
+
+        @Override
+        public Object next() {
+            return queue.dequeue();
+        }
+        
+        
+    }
 }

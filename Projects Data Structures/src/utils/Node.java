@@ -9,29 +9,34 @@ package utils;
  *
  * @author cbarnum18
  */
-public class Node<E> {
+public class Node<E> implements Cloneable {
 
-        private Node next;
-        private E data;
+    private Node next;
+    private E data;
 
-        public Node(Node next, E data) {
-            this.next = next;
-            this.data = data;
-        }
-        
-        public void setData(E data){
-            this.data = data;
-        }
-        
-        public void setNext(Node next){
-            this.next = next;
-        }
-        
-        public E getData(){
-            return data;
-        }
-        
-        public Node getNext(){
-            return next;
-        }
+    public Node(Node next, E data) {
+        this.next = next;
+        this.data = data;
     }
+
+    public void setData(E data) {
+        this.data = data;
+    }
+
+    public void setNext(Node next) {
+        this.next = next;
+    }
+
+    public E getData() {
+        return data;
+    }
+
+    public Node getNext() {
+        return next;
+    }
+
+    @Override
+    public Node<E> clone() {
+        return null;
+    }
+}

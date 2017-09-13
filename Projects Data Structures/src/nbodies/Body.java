@@ -21,25 +21,35 @@ public class Body {
     private double mass;
     private String gifFile;
     
+    private Vector nextVel;
+    private Vector nextCoo;
+    
     public Body(Vector c, Vector v, double ms, String gf){
         coords = c;
         velocity = v;
         mass = ms;
         gifFile = gf;
+        nextVel = v;
+        nextCoo = c;
     }
     
     public void update(){
         Vector netForce = new Vector(0, 0);
         for(Body b : Sim.bodies){
             if(b != this){
-                double px = b.getCoords().cartesian(0) - coords.cartesian(0);
-                double py = b.getCoords().cartesian(1) - coords.cartesian(1);
-                double conF = (6.67e-11 * mass * b.getMass()) / Math.pow(px * px + py * py, THREE_HALFS);
-                netForce = netForce.plus(new Vector(conF * px, conF * py));
+                double dx = b.getCoords().cartesian(0) - coords.cartesian(0);
+                double dy = b.getCoords().cartesian(1) - coords.cartesian(1);
+                double conF = (6.67e-11 * b.getMass() * Sim.increment) / Math.pow(dx * dx + dy * dy, THREE_HALFS);
+                netForce = netForce.plus(new Vector(conF * dx, conF * dy));
             }
         }
-        velocity = velocity.plus(netForce.scale(Sim.increment / mass));
-        coords = coords.plus(velocity.scale(Sim.increment));
+        nextVel = velocity.plus(netForce);
+        nextCoo = coords.plus(nextVel.scale(Sim.increment));
+    }
+    
+    public void toNextVectors(){
+        velocity = nextVel;
+        coords = nextCoo;
     }
     
     public void draw(){
