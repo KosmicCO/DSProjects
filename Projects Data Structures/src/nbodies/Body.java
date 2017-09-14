@@ -54,13 +54,11 @@ public class Body {
                 double dy = b.coords.cartesian(1) - coords.cartesian(1);
                 double r1 = Math.pow(dx * dx + dy * dy, 0.5);
                 double force = (G * b.mass) / (r1 * r1);
-                netForce = netForce.plus(new Vector((force * dx) / r1, (force * dy)/ r1));
+                netForce = new Vector((force * dx) / r1 + netForce.cartesian(0), (force * dy)/ r1 + netForce.cartesian(1));
             }
         }
-        System.out.println(netForce);
-        nextVel = velocity.plus(netForce.scale(Sim.increment));
-        System.out.println(nextVel + " " + velocity);
-        nextCoo = coords.plus(nextVel.scale(Sim.increment));
+        nextVel = new Vector(netForce.cartesian(0) * Sim.increment + velocity.cartesian(0), netForce.cartesian(1) * Sim.increment + velocity.cartesian(1));
+        nextCoo = new Vector(nextVel.cartesian(0) * Sim.increment + coords.cartesian(0), nextVel.cartesian(1) * Sim.increment + coords.cartesian(1));
     }
     
     public void toNextVectors(){

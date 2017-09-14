@@ -25,7 +25,7 @@ public class Sim {
     public static ArrayList<Body> bodies;
     
     public static void main(String[] args) {
-        String[] gggggg = { "1000000.0", "100.0", "planets-zero-gravity.txt"};
+        String[] gggggg = { "10000000.0", "10000.0", "planets-zero-gravity.txt"};
         initFromFile(gggggg);
         draw();
         double curtime = 0.0;
