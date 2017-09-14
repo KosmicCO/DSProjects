@@ -14,7 +14,8 @@ import edu.princeton.cs.algs4.Vector;
  */
 public class Body {
     
-    private static final double THREE_HALFS = 3 / 2;
+    private static final double THREE_HALFS = 3.0 / 2.0;
+    private static final double G = 6.67e-11;
     
     private Vector coords;
     private Vector velocity;
@@ -34,16 +35,31 @@ public class Body {
     }
     
     public void update(){
+//        Vector netForce = new Vector(0, 0);
+//        for(Body b : Sim.bodies){
+//            if(b != this){
+//                double dx = b.getCoords().cartesian(0) - coords.cartesian(0);
+//                double dy = b.getCoords().cartesian(1) - coords.cartesian(1);
+//                double conF = (6.67e-11 * b.getMass() * Sim.increment) / Math.pow(dx * dx + dy * dy, THREE_HALFS);
+//                netForce = netForce.plus(new Vector(conF * dx, conF * dy));
+//            }
+//        }
+//        nextVel = velocity.plus(netForce);
+//        nextCoo = coords.plus(nextVel.scale(Sim.increment));
+
         Vector netForce = new Vector(0, 0);
         for(Body b : Sim.bodies){
             if(b != this){
-                double dx = b.getCoords().cartesian(0) - coords.cartesian(0);
-                double dy = b.getCoords().cartesian(1) - coords.cartesian(1);
-                double conF = (6.67e-11 * b.getMass() * Sim.increment) / Math.pow(dx * dx + dy * dy, THREE_HALFS);
-                netForce = netForce.plus(new Vector(conF * dx, conF * dy));
+                double dx = b.coords.cartesian(0) - coords.cartesian(0);
+                double dy = b.coords.cartesian(1) - coords.cartesian(1);
+                double r1 = Math.pow(dx * dx + dy * dy, 0.5);
+                double force = (G * b.mass) / (r1 * r1);
+                netForce = netForce.plus(new Vector((force * dx) / r1, (force * dy)/ r1));
             }
         }
-        nextVel = velocity.plus(netForce);
+        System.out.println(netForce);
+        nextVel = velocity.plus(netForce.scale(Sim.increment));
+        System.out.println(nextVel + " " + velocity);
         nextCoo = coords.plus(nextVel.scale(Sim.increment));
     }
     

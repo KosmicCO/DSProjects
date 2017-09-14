@@ -25,7 +25,7 @@ public class Sim {
     public static ArrayList<Body> bodies;
     
     public static void main(String[] args) {
-        String[] gggggg = { "1000.0", "1.0", "planets-zero-gravity.txt"};
+        String[] gggggg = { "1000000.0", "100.0", "planets-zero-gravity.txt"};
         initFromFile(gggggg);
         draw();
         double curtime = 0.0;
@@ -47,7 +47,7 @@ public class Sim {
     }
     
     public static void draw(){
-        StdDraw.picture(0, 0, BACK, 2, 2);
+        //StdDraw.picture(0, 0, BACK, 2, 2);
         bodies.forEach(b -> b.draw());
     }
     
