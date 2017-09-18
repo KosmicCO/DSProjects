@@ -16,17 +16,17 @@ import utils.Node;
  * @author cbarnum18
  * @param <E>
  */
-public class LinkedList<E> implements Cloneable, Iterable<E>, List<E>{
+public class LinkedList<E> implements Cloneable, Iterable<E>, List<E> {
 
     private Node<E> startNode;
     private Node<E> endNode;
     private int size;
-    
-    public LinkedList(){
+
+    public LinkedList() {
         startNode = endNode = null;
         size = 0;
     }
-    
+
     @Override
     public Iterator iterator() {
         return null;
@@ -59,9 +59,9 @@ public class LinkedList<E> implements Cloneable, Iterable<E>, List<E>{
 
     @Override
     public boolean add(E e) {
-        if(endNode == null){
+        if (endNode == null) {
             startNode = endNode = new Node(null, e);
-        }else{
+        } else {
             endNode.setNext(new Node(null, e));
         }
         return true;
@@ -111,9 +111,9 @@ public class LinkedList<E> implements Cloneable, Iterable<E>, List<E>{
         Node<E> curNode = startNode;
         for (int j = 0; j < i; j++) {
             Node<E> next = curNode.getNext();
-            if(next != null){
+            if (next != null) {
                 curNode = next;
-            }else{
+            } else {
                 throw new ArrayIndexOutOfBoundsException();
             }
         }
@@ -125,9 +125,9 @@ public class LinkedList<E> implements Cloneable, Iterable<E>, List<E>{
         Node<E> curNode = startNode;
         for (int j = 0; j < i; j++) {
             Node<E> next = curNode.getNext();
-            if(next != null){
+            if (next != null) {
                 curNode = next;
-            }else{
+            } else {
                 throw new ArrayIndexOutOfBoundsException();
             }
         }
@@ -140,27 +140,41 @@ public class LinkedList<E> implements Cloneable, Iterable<E>, List<E>{
         Node<E> curNode = startNode;
         for (int j = 0; j < i - 1; j++) {
             Node<E> next = curNode.getNext();
-            if(next != null){
+            if (next != null) {
                 curNode = next;
-            }else{
+            } else {
                 throw new ArrayIndexOutOfBoundsException();
             }
         }
-        if(i == 0){
+        if (i == 0) {
             startNode = new Node(startNode, e);
-        }else{
+        } else {
             Node<E> rest = curNode.getNext();
             curNode.setNext(new Node(rest, e));
         }
-        
-        if(endNode.getNext() != null){
+
+        if (endNode.getNext() != null) {
             endNode = endNode.getNext();
         }
     }
 
     @Override
     public E remove(int i) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Node<E> curNode = startNode;
+        for (int j = 0; j < i - 1; j++) {
+            Node<E> next = curNode.getNext();
+            if (next != null) {
+                curNode = next;
+            } else {
+                throw new ArrayIndexOutOfBoundsException();
+            }
+        }
+        Node<E> del = curNode.getNext();
+        if (del != null) {
+            curNode.setNext(del.getNext());
+            return del.getData();
+        }
+        throw new ArrayIndexOutOfBoundsException();
     }
 
     @Override
@@ -187,8 +201,8 @@ public class LinkedList<E> implements Cloneable, Iterable<E>, List<E>{
     public List subList(int i, int i1) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-    
-    private class LinkedListIterator<E> implements Iterator<E>, ListIterator<E>{
+
+    private class LinkedListIterator<E> implements Iterator<E>, ListIterator<E> {
 
         @Override
         public boolean hasNext() {
@@ -234,6 +248,6 @@ public class LinkedList<E> implements Cloneable, Iterable<E>, List<E>{
         public void add(E e) {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
-        
+
     }
 }

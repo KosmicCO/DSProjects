@@ -7,8 +7,8 @@ package nbodies;
 
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdDraw;
-import edu.princeton.cs.algs4.Vector;
 import java.util.ArrayList;
+import utils.Vec;
 
 /**
  *
@@ -25,11 +25,11 @@ public class Sim {
     public static ArrayList<Body> bodies;
     
     public static void main(String[] args) {
-        String[] gggggg = { "10000000.0", "10000.0", "planets-zero-gravity.txt"};
+        String[] gggggg = { "100000000.0", "10000.0", "planets.txt"};
         initFromFile(gggggg);
         draw();
         double curtime = 0.0;
-        double waittime = 100;
+        double waittime = 5;
         double milli = System.currentTimeMillis();
         while(curtime < duration){
             update();
@@ -47,8 +47,9 @@ public class Sim {
     }
     
     public static void draw(){
-        //StdDraw.picture(0, 0, BACK, 2, 2);
+        StdDraw.picture(0, 0, BACK, 2, 2);
         bodies.forEach(b -> b.draw());
+        StdDraw.show();
     }
     
     public static void initFromFile(String[] args){
@@ -60,10 +61,10 @@ public class Sim {
             uniRadius = fileInput.readDouble();
             uniDiameter = uniRadius * 2;
             bodies = new ArrayList();
-            
+            StdDraw.enableDoubleBuffering();
             for (int i = 0; i < planNum; i++) {
-                Vector pos = new Vector(fileInput.readDouble(), fileInput.readDouble());
-                Vector vel = new Vector(fileInput.readDouble(), fileInput.readDouble());
+                Vec pos = new Vec(fileInput.readDouble(), fileInput.readDouble());
+                Vec vel = new Vec(fileInput.readDouble(), fileInput.readDouble());
                 bodies.add(new Body(pos, vel, fileInput.readDouble(), "nbody/nbody/" + fileInput.readString()));
             }
 //        }catch(NumberFormatException nfe){
