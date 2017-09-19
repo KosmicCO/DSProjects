@@ -26,7 +26,7 @@ public class Sim {
     
     public static void main(String[] args) {
         String[] gggggg = { "100000000.0", "10000.0", "planets.txt"};
-        initFromFile(gggggg);
+        initFromFile(args);
         draw();
         double curtime = 0.0;
         double waittime = 5;
