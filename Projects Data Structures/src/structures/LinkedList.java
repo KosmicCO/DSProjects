@@ -27,6 +27,16 @@ public class LinkedList<E> implements Cloneable, Iterable<E>, List<E> {
         size = 0;
     }
 
+    //For Grading Purposes (renamed)
+    public void delete(int k) {
+        remove(k);
+    }
+
+    public boolean find(String key) {
+        return contains(key);
+    }
+    //end of grading renamed methods
+
     @Override
     public Iterator iterator() {
         return null;
@@ -44,12 +54,25 @@ public class LinkedList<E> implements Cloneable, Iterable<E>, List<E> {
 
     @Override
     public boolean contains(Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Node<E> curNode = startNode;
+        while (curNode != endNode) {
+            if (curNode.getData() == o) {
+                return true;
+            }
+            curNode = curNode.getNext();
+        }
+        return false;
     }
 
     @Override
     public Object[] toArray() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Object[] array = new Object[size];
+        int count = 0;
+        for (E item : this) {
+            array[count] = item;
+            count++;
+        }
+        return array;
     }
 
     @Override
@@ -69,12 +92,22 @@ public class LinkedList<E> implements Cloneable, Iterable<E>, List<E> {
 
     @Override
     public boolean remove(Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Node<E> prev = startNode;
+        if (prev != null) {
+            while (prev != endNode && prev.getNext().getData() != o) {
+                prev = prev.getNext();
+            }
+        }
+        if (prev != endNode) {
+            prev.setNext(prev.getNext().getNext());
+            return true;
+        }
+        return false;
     }
 
     @Override
     public boolean containsAll(Collection clctn) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return clctn.stream().noneMatch((o) -> (!contains(o)));
     }
 
     @Override
@@ -202,16 +235,23 @@ public class LinkedList<E> implements Cloneable, Iterable<E>, List<E> {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    private class LinkedListIterator<E> implements Iterator<E>, ListIterator<E> {
+    private class LinkedListIterator<E> implements ListIterator<E> {
+
+        private LinkedList<E> ll;
+
+        public LinkedListIterator(LinkedList node) {
+        }
 
         @Override
         public boolean hasNext() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            throw new UnsupportedOperationException("Unsupportable."); //To change body of generated methods, choose Tools | Templates.
+
         }
 
         @Override
         public E next() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            throw new UnsupportedOperationException("Unsupportable."); //To change body of generated methods, choose Tools | Templates.
+
         }
 
         @Override
@@ -226,17 +266,20 @@ public class LinkedList<E> implements Cloneable, Iterable<E>, List<E> {
 
         @Override
         public int nextIndex() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            throw new UnsupportedOperationException("Unsupportable."); //To change body of generated methods, choose Tools | Templates.
+
         }
 
         @Override
         public int previousIndex() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            throw new UnsupportedOperationException("Unsupportable."); //To change body of generated methods, choose Tools | Templates.
+
         }
 
         @Override
         public void remove() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            throw new UnsupportedOperationException("Unsupportable."); //To change body of generated methods, choose Tools | Templates.
+
         }
 
         @Override
