@@ -13,7 +13,7 @@ import utils.Node;
  * @author cbarnum18
  * @param <E>
  */
-public class Bag<E> implements Cloneable, Iterable {
+public class Bag<E> implements Iterable<E> {
 
     private Node<E> startNode;
     private int size;
@@ -38,7 +38,7 @@ public class Bag<E> implements Cloneable, Iterable {
         return size;
     }
     
-    private class BagIterator<E> implements Iterator {
+    private class BagIterator<E> implements Iterator<E> {
 
         private Node<E> next;
         
@@ -48,7 +48,7 @@ public class Bag<E> implements Cloneable, Iterable {
         
         @Override
         public boolean hasNext() {
-            return next.getNext() != null;
+            return next != null;
         }
 
         @Override

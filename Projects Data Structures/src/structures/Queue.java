@@ -13,7 +13,7 @@ import utils.Node;
  * @author cbarnum18
  * @param <E>
  */
-public class Queue<E> implements Cloneable, Iterable {
+public class Queue<E> implements Iterable<E> {
 
     private Node<E> firstNode;
     private Node<E> addNode;
@@ -28,7 +28,9 @@ public class Queue<E> implements Cloneable, Iterable {
         if (firstNode == null) {
             firstNode = addNode = new Node(null, item);
         } else {
-            addNode.setNext(new Node(null, item));
+            Node<E> next = new Node(null, item);
+            addNode.setNext(next);
+            addNode = next;
         }
         ++size;
     }
@@ -43,11 +45,6 @@ public class Queue<E> implements Cloneable, Iterable {
         return null;
     }
     
-    @Override
-    public Queue<E> clone(){
-        return null;
-    }
-    
     public int getSize(){
         return size;
     }
@@ -57,11 +54,11 @@ public class Queue<E> implements Cloneable, Iterable {
         return new QueueIterator(this);
     }
     
-    private class QueueIterator<E> implements Iterator{
+    private class QueueIterator<E> implements Iterator<E> {
         
-        private Queue queue;
+        private Queue<E> queue;
         
-        public QueueIterator(Queue queue){
+        public QueueIterator(Queue<E> queue){
             this.queue = queue;
         }
 
@@ -71,10 +68,8 @@ public class Queue<E> implements Cloneable, Iterable {
         }
 
         @Override
-        public Object next() {
+        public E next() {
             return queue.dequeue();
         }
-        
-        
     }
 }

@@ -16,7 +16,7 @@ import utils.Node;
  * @author cbarnum18
  * @param <E>
  */
-public class LinkedList<E> implements Cloneable, Iterable<E>, List<E> {
+public class LinkedList<E> implements List<E> {
 
     private Node<E> startNode;
     private Node<E> endNode;
@@ -50,6 +50,19 @@ public class LinkedList<E> implements Cloneable, Iterable<E>, List<E> {
     @Override
     public boolean isEmpty() {
         return size <= 0;
+    }
+    
+    private Node<E> getNodeAtIndex(int i){
+        Node<E> curNode = startNode;
+        for (int j = 0; j < i; j++) {
+            Node<E> next = curNode.getNext();
+            if (next != null) {
+                curNode = next;
+            } else {
+                throw new ArrayIndexOutOfBoundsException();
+            }
+        }
+        return curNode;
     }
 
     @Override
@@ -87,6 +100,7 @@ public class LinkedList<E> implements Cloneable, Iterable<E>, List<E> {
         } else {
             endNode.setNext(new Node(null, e));
         }
+        size++;
         return true;
     }
 
@@ -100,6 +114,7 @@ public class LinkedList<E> implements Cloneable, Iterable<E>, List<E> {
         }
         if (prev != endNode) {
             prev.setNext(prev.getNext().getNext());
+            size--;
             return true;
         }
         return false;
@@ -115,12 +130,31 @@ public class LinkedList<E> implements Cloneable, Iterable<E>, List<E> {
         clctn.forEach((e) -> {
             this.add((E) e);
         });
+        size += clctn.size();
         return true;
     }
 
     @Override
     public boolean addAll(int i, Collection clctn) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if(i < 0 || i > size){
+            throw new ArrayIndexOutOfBoundsException();
+        }
+        size += clctn.size();
+        LinkedList<E> nodeGen = new LinkedList();
+        clctn.forEach((o) -> nodeGen.add((E) o));
+        if(i == 0){
+            nodeGen.endNode.setNext(startNode);
+            startNode = nodeGen.startNode;
+            return true;
+        }
+        if(i == size){
+            endNode = nodeGen.endNode;
+        }
+        Node<E> insert = getNodeAtIndex(i - 1);
+        Node<E> next = insert.getNext();
+        insert.setNext(nodeGen.startNode);
+        nodeGen.endNode.setNext(next);
+        return true;
     }
 
     @Override
@@ -189,6 +223,7 @@ public class LinkedList<E> implements Cloneable, Iterable<E>, List<E> {
         if (endNode.getNext() != null) {
             endNode = endNode.getNext();
         }
+        size++;
     }
 
     @Override
@@ -205,6 +240,7 @@ public class LinkedList<E> implements Cloneable, Iterable<E>, List<E> {
         Node<E> del = curNode.getNext();
         if (del != null) {
             curNode.setNext(del.getNext());
+            size--;
             return del.getData();
         }
         throw new ArrayIndexOutOfBoundsException();
@@ -237,21 +273,27 @@ public class LinkedList<E> implements Cloneable, Iterable<E>, List<E> {
 
     private class LinkedListIterator<E> implements ListIterator<E> {
 
-        private LinkedList<E> ll;
+        private Node<E> curNode;
+        private final LinkedList<E> list;
+        private int index;
 
-        public LinkedListIterator(LinkedList node) {
+        public LinkedListIterator(LinkedList<E> list) {
+            this.list = list;
+            curNode = list.startNode;
+            index = 0;
         }
 
         @Override
         public boolean hasNext() {
-            throw new UnsupportedOperationException("Unsupportable."); //To change body of generated methods, choose Tools | Templates.
-
+            return index < list.size;
         }
 
         @Override
         public E next() {
-            throw new UnsupportedOperationException("Unsupportable."); //To change body of generated methods, choose Tools | Templates.
-
+            E ret = curNode.getData();
+            curNode = curNode.getNext();
+            index++;
+            return ret;
         }
 
         @Override
@@ -266,14 +308,12 @@ public class LinkedList<E> implements Cloneable, Iterable<E>, List<E> {
 
         @Override
         public int nextIndex() {
-            throw new UnsupportedOperationException("Unsupportable."); //To change body of generated methods, choose Tools | Templates.
-
+            return index + 1;
         }
 
         @Override
         public int previousIndex() {
-            throw new UnsupportedOperationException("Unsupportable."); //To change body of generated methods, choose Tools | Templates.
-
+            return index - 1;
         }
 
         @Override

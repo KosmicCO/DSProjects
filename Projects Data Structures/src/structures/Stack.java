@@ -13,7 +13,7 @@ import utils.Node;
  * @author cbarnum18
  * @param <E>
  */
-public class Stack<E> implements Cloneable, Iterable {
+public class Stack<E> implements Cloneable, Iterable<E> {
 
     private Node<E> startNode;
     private int size;
@@ -47,11 +47,11 @@ public class Stack<E> implements Cloneable, Iterable {
         return new StackIterator(this);
     }
 
-    private class StackIterator<E> implements Iterator {
+    private class StackIterator<E> implements Iterator<E> {
 
-        private final Stack stack;
+        private final Stack<E> stack;
 
-        public StackIterator(Stack start) {
+        public StackIterator(Stack<E> start) {
             stack = start;
         }
 
@@ -62,7 +62,7 @@ public class Stack<E> implements Cloneable, Iterable {
 
         @Override
         public E next() {
-            return (E) stack.pop();
+            return stack.pop();
         }
     }
 }
