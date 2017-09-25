@@ -8,8 +8,9 @@ package utils;
 /**
  *
  * @author cbarnum18
+ * @param <E>
  */
-public class Node<E> implements Cloneable {
+public class Node<E> {
 
     private Node next;
     private E data;
@@ -33,10 +34,5 @@ public class Node<E> implements Cloneable {
 
     public Node getNext() {
         return next;
-    }
-
-    @Override
-    public Node<E> clone() {
-        return null;
     }
 }
