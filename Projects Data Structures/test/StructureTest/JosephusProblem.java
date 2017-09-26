@@ -13,7 +13,7 @@ import structures.CircQueue;
  */
 public class JosephusProblem {
     public static void main(String[] arg) {
-        String[] args = {"13", "3"};
+        String[] args = {"23843", "2"};
         int num = Integer.parseInt(args[0]);
         int n = Integer.parseInt(args[1]);
         CircQueue<Integer> circle = new CircQueue();
@@ -22,6 +22,7 @@ public class JosephusProblem {
         }
         
         int count = 1;
+        int nline = 1;
         while(circle.getSize() > 1){
             Integer i = circle.dequeue();
             if(!(count % n == 0)){
@@ -29,6 +30,11 @@ public class JosephusProblem {
             }else{
                 System.out.print(" " + i);
             }
+            nline %= 25;
+            if(nline == 0){
+                System.out.println("");
+            }
+            nline++;
             count++;
         }
         
