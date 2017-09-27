@@ -6,6 +6,7 @@
 package structures;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
@@ -34,6 +35,35 @@ public class LinkedList<E> implements List<E> {
 
     public boolean find(String key) {
         return contains(key);
+    }
+    
+    public void removeAfter(Node<E> node){
+        if(node.getNext() != null){
+            node.setNext(node.getNext().getNext());
+        }
+    }
+    
+    public void insertAfter(Node<E> pre, Node<E> ins){
+        if(pre != null && ins != null){
+            ins.setNext(pre.getNext());
+            pre.setNext(ins);
+        }
+    }
+    
+    public void insertFirst(E item){
+        add(0, item);
+    }
+    
+    public void insertLast(E item){
+        add(size, item);
+    }
+    
+    public E removeFirst(){
+        return remove(0);
+    }
+    
+    public E removeLast(){
+        return remove(size - 1);
     }
     //end of grading renamed methods
 
@@ -258,7 +288,7 @@ public class LinkedList<E> implements List<E> {
 
     @Override
     public ListIterator listIterator() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return new LinkedListIterator(this);
     }
 
     @Override
