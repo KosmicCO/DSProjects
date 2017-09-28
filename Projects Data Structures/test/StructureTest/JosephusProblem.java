@@ -12,8 +12,8 @@ import structures.CircQueue;
  * @author cbarnum18
  */
 public class JosephusProblem {
-    public static void main(String[] arg) {
-        String[] args = {"23843", "2"};
+    public static void main(String[] args) {
+        //String[] args = {"100000", "7"};
         int num = Integer.parseInt(args[0]);
         int n = Integer.parseInt(args[1]);
         CircQueue<Integer> circle = new CircQueue();
