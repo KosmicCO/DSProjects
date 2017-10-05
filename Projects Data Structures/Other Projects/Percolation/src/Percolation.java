@@ -49,7 +49,7 @@ public class Percolation extends WeightedQuickUnionUF {
                     }else if(nRow >= length){
                         union(node, VBOT);
                     }else{
-                        union(node, flatten(nRow, nCol));
+                        if(sites[nRow][nCol]) union(node, flatten(nRow, nCol));
                     }
                 }
             }
@@ -57,8 +57,6 @@ public class Percolation extends WeightedQuickUnionUF {
     }
     
     private int flatten(int row, int col){
-        row--;
-        col--;
         return row + length * col;
     }
     
@@ -69,6 +67,7 @@ public class Percolation extends WeightedQuickUnionUF {
     }
     
     public boolean isFull(int row, int col){
+        System.out.println("" + row + "" + col);
         row--;
         col--;
         return connected(flatten(row, col), VTOP);
