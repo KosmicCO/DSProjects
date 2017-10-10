@@ -15,16 +15,17 @@ public class PercolationStats {
 
     private final int length;
     private final double size;
-    private final int trials;
     private final double[] result;
 
     private final double[] data = new double[4];
     private byte calculated = 0;
 
     public PercolationStats(int length, int trials) {
+        if (0 >= length || 0 >= trials) {
+            throw new IllegalArgumentException();
+        }
         this.length = length;
         size = length * length;
-        this.trials = trials;
         result = new double[trials];
 
         for (int i = 0; i < trials; i++) {
@@ -50,7 +51,7 @@ public class PercolationStats {
     public double mean() {
         if ((calculated & 0x8) == 0x0) {
             data[0] = StdStats.mean(result);
-            calculated ^= 0x8;
+            calculated |= 0x8;
         }
         return data[0];
     }
@@ -58,7 +59,7 @@ public class PercolationStats {
     public double stddev() {
         if ((calculated & 0x4) == 0x0) {
             data[1] = StdStats.stddev(result);
-            calculated ^= 0x4;
+            calculated |= 0x4;
         }
         return data[1];
     }
@@ -66,7 +67,7 @@ public class PercolationStats {
     public double confidenceLo() {
         if ((calculated & 0x2) == 0x0) {
             data[2] = mean() - 2 * stddev();
-            calculated ^= 0x2;
+            calculated |= 0x2;
         }
         return data[2];
     }
@@ -74,14 +75,14 @@ public class PercolationStats {
     public double confidenceHi() {
         if ((calculated & 0x1) == 0x0) {
             data[3] = mean() + 2 * stddev();
-            calculated ^= 0x1;
+            calculated |= 0x1;
         }
         return data[3];
     }
 
     public static void main(String[] args) {
         int length = 100;
-        int trials = 100;
+        int trials = 10000;
         if (args.length == 2) {
             length = Integer.parseInt(args[0]);
             trials = Integer.parseInt(args[1]);
