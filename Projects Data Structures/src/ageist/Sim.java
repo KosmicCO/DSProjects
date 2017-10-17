@@ -11,4 +11,6 @@ package ageist;
  */
 public class Sim {
     
+    public static double increment;
+    public static double duration;
 }

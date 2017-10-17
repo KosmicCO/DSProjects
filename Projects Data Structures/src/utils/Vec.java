@@ -24,7 +24,7 @@ public class Vec {
     public static Vec rand(int dim){
         double[] vec = new double[dim];
         for (int i = 0; i < dim; i++) {
-            vec[i] = StdRandom.uniform();
+            vec[i] = StdRandom.uniform() * 2 - 1;
         }
         return new Vec(vec);
     }
