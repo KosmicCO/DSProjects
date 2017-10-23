@@ -1,36 +1,63 @@
 
+import edu.princeton.cs.algs4.BinarySearch;
 import edu.princeton.cs.algs4.In;
+import edu.princeton.cs.algs4.StdOut;
+import edu.princeton.cs.algs4.Stopwatch;
+import java.util.Arrays;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 /**
  *
  * @author cbarnum18
  */
 public class ThreeSumFast {
-    
-    public static String filename;
-    public static int[] ints;
-    
-    //public static int count();
-    
+
+    public static int count(int[] a) {
+        Arrays.sort(a);
+        int n = a.length;
+        int count = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                if (BinarySearch.indexOf(a, -a[i] - a[j]) > j) {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+
     public static void main(String[] args) {
-        if(args.length == 2){
-            filename = args[0];
-            ints = new int[Integer.parseInt(args[1])];
-        }else{
-            filename = "1Kints.txt";
-            ints = new int[1000];
+        int[] list;
+        double[] timeList = new double[6];
+        double[] diffList = new double[5];
+        double[] ddifList = new double[4];
+        int cnt = 0;
+        for (int i = 1; i <= 32; i = i << 1) {
+            list = (new In("intFiles/" + i + "Kints.txt")).readAllInts();
+            Stopwatch sw = new Stopwatch();
+            count(list);
+            timeList[cnt] = sw.elapsedTime();
+            StdOut.printf("%2dKints : %-6.4f sec%n", i, timeList[cnt]);
+            if (i > 1) {
+                diffList[cnt - 1] = timeList[cnt] - timeList[cnt - 1];
+                StdOut.printf("%8s: %-6.4f sec%n", "", diffList[cnt - 1]);
+                StdOut.printf("%8s: %-6.4f sec%n", "", timeList[cnt] / diffList[cnt - 1]);
+            }
+            if (i > 2) {
+                
+            }
+            cnt++;
         }
         
-        In fn = new In(filename);
-        
-        for (int i = 0; i < ints.length; i++) {
-            ints[i] = fn.readInt();
-        }
+        //predict 65 seconds
+        list = (new In("intFiles/1Mints.txt")).readAllInts();
+        Stopwatch sw = new Stopwatch();
+        count(list);
+        double t = sw.elapsedTime();
+        StdOut.printf(" 1Mints : %-6.4f sec%n", t);
     }
 }
