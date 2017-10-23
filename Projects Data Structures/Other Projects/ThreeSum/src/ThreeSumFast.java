@@ -36,6 +36,20 @@ public class ThreeSumFast {
             ints = new int[integers.length];
             runs = 10;
         }
+    }
+    
+    public static void mainInt(String[] args) {
+        if(args.length == 3){
+            filename = args[0];
+            integers = new Integer[Integer.parseInt(args[1])];
+            ints = new int[integers.length];
+            runs = Integer.parseInt(args[2]);
+        }else{
+            filename = "1Kints.txt";
+            integers = new Integer[1000];
+            ints = new int[integers.length];
+            runs = 10;
+        }
         
         In fn = new In(filename);
         
