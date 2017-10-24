@@ -16,8 +16,21 @@ import java.util.Arrays;
  */
 public class ThreeSumFast {
 
+    public static void insertion(int[] a){
+        for (int i = 1; i < a.length; i++) {
+            for (int j = i; j > 0; j--) {
+                if (a[j] < a[j - 1]){
+                    int k = a[j];
+                    a[j] = a[j - 1];
+                    a[j - 1] = k;
+                }
+            }
+        }
+    }
+    
     public static int count(int[] a) {
-        Arrays.sort(a);
+        //Arrays.sort(a);
+        insertion(a);
         int n = a.length;
         int count = 0;
         for (int i = 0; i < n; i++) {
@@ -41,11 +54,11 @@ public class ThreeSumFast {
             Stopwatch sw = new Stopwatch();
             count(list);
             timeList[cnt] = sw.elapsedTime();
-            StdOut.printf("%2dKints : %-6.4f sec%n", i, timeList[cnt]);
+            StdOut.printf("%2dKints : %6.4f sec%n", i, timeList[cnt]);
             if (i > 1) {
                 diffList[cnt - 1] = timeList[cnt] - timeList[cnt - 1];
-                StdOut.printf("%8s: %-6.4f sec%n", "", diffList[cnt - 1]);
-                StdOut.printf("%8s: %-6.4f sec%n", "", timeList[cnt] / diffList[cnt - 1]);
+                StdOut.printf("%8s: %6.4f sec%n", "", diffList[cnt - 1]);
+                StdOut.printf("%8s: %6.4f sec%n", "", timeList[cnt] / diffList[cnt - 1]);
             }
             if (i > 2) {
                 
@@ -54,10 +67,10 @@ public class ThreeSumFast {
         }
         
         //predict 65 seconds
-        list = (new In("intFiles/1Mints.txt")).readAllInts();
-        Stopwatch sw = new Stopwatch();
-        count(list);
-        double t = sw.elapsedTime();
-        StdOut.printf(" 1Mints : %-6.4f sec%n", t);
+//        list = (new In("intFiles/1Mints.txt")).readAllInts();
+//        Stopwatch sw = new Stopwatch();
+//        count(list);
+//        double t = sw.elapsedTime();
+//        StdOut.printf(" 1Mints : %-6.4f sec%n", t);
     }
 }
