@@ -17,6 +17,13 @@ public class World {
 
     public final static double increment = 0.01;
     public final static double duration = Double.POSITIVE_INFINITY;
+    
+    public double camStart = 4;
+    public double xOffset = 0;
+    public double yOffset = 0;
+    
+    private boolean prevMouse = false;
+    private double mx = 0, my = 0;
 
     private Mov[] movList;
     private int numMovs;
@@ -32,18 +39,26 @@ public class World {
 
     public void updateDraw() {
         StdDraw.clear();
-        StdDraw.setPenColor(127, 127, 0);
-        StdDraw.circle(0.0, 0.0, 1.0);
-        StdDraw.setPenColor();
+        if(StdDraw.isMousePressed()){
+            double nmx = StdDraw.mouseX(), nmy = StdDraw.mouseY();
+            if(prevMouse){
+                xOffset += nmx - mx;
+                yOffset += nmy - my;
+            }
+            mx = nmx;
+            my = nmy;
+            prevMouse = true;
+        }else{
+            prevMouse = false;
+        }
         for (Mov m : movList) {
             m.update();
             m.draw();
         }
-        double unit = (movList[0].pos.getCom(2) + 16) / 4;
-        if(unit > 0){
-        StdDraw.circle(0.0, 0.0, (movList[0].pos.getCom(2) + 4) / 4);
-        StdDraw.line(0.0, 0.0, movList[0].pos.getCom(0) * unit, movList[0].pos.getCom(1) * unit);
-        }
+        StdDraw.line(0.0, 0.0, xOffset, yOffset);
+        StdDraw.setPenColor(127, 127, 0);
+        StdDraw.circle(0.0, 0.0, 1.0);
+        StdDraw.setPenColor();
         StdDraw.show();
     }
 
@@ -73,9 +88,9 @@ public class World {
 
         public void draw() {
             if (pos.dim == 3) {
-                if (pos.getCom(2) > -4) {
-                    double dist = (pos.getCom(2) + 4) / 4;
-                    StdDraw.filledSquare(pos.getCom(0) * dist, pos.getCom(1) * dist, dist / 128);
+                if(pos.getCom(2) < camStart){
+                    double scale = -1 / (pos.getCom(2) - camStart);
+                    StdDraw.filledSquare(scale * (pos.getCom(0) + xOffset), scale * (pos.getCom(1) + yOffset), scale / 5);
                 }
             }else{
                 StdDraw.filledSquare(pos.getCom(0), pos.getCom(1), 0.02);
