@@ -1,5 +1,6 @@
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -35,6 +36,7 @@ public class Deque<Item> implements Iterable<Item> {
                 break;
             case 1:
                 secend.next = new Node(secend, item);
+                secend = secend.next;
                 break;
             default:
                 secend.next.next = new Node(secend.next.next, item);
@@ -50,24 +52,55 @@ public class Deque<Item> implements Iterable<Item> {
                 secend.next = secend;
                 break;
             case 1:
-                secend.next = new Node(secend, item);
+                secend.next.next = new Node(secend.next.next, item);
                 break;
             default:
                 secend.next.next = new Node(secend.next.next, item);
                 secend = secend.next;
                 break;
         }
+        size++;
     }           // add the item to the end
 
     public Item removeFirst() {
+        Item data;
+        switch (size) {
+            case 0:
+                throw new NoSuchElementException();
+            case 1:
+                data = secend.data;
+                secend = null;
+                break;
+            default:
+                data = secend.next.next.data;
+                secend.next.next = secend.next.next.next;
+                break;
+        }
+        size--;
+        return data;
     }                // remove and return the item from the front
 
     public Item removeLast() {
+        Item data;
+        switch(size){
+            case 0:
+                throw new NoSuchElementException();
+            case 1:
+                data = secend.data;
+                secend = null;
+                break;
+            default:
+                data = secend.next.data;
+                secend.next = secend.next.next;
+        }
+        size--;
+        return data;
     }                 // remove and return the item from the end
 
     @Override
     public Iterator<Item> iterator() {
-    }         // return an iterator over items in order from front to end
+        return new DequeIterator(this);
+    }    // return an iterator over items in order from front to end
 
     public static void main(String[] args) {
     }   // unit testing (optional)
@@ -85,14 +118,21 @@ public class Deque<Item> implements Iterable<Item> {
 
     private class DequeIterator<Item> implements Iterator<Item> {
 
+        private final Deque<Item> deque;
+        
+        public DequeIterator(Deque<Item> dq){
+            deque = dq;
+        }
+        
         @Override
         public boolean hasNext() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            return !deque.isEmpty();
         }
 
         @Override
         public Item next() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            if(!hasNext()) throw new NoSuchElementException();
+            return deque.removeFirst();
         }
     }
 }
