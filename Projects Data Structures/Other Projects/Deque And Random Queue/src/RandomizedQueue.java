@@ -16,12 +16,12 @@ import java.util.NoSuchElementException;
  */
 public class RandomizedQueue<Item> implements Iterable<Item> {
 
-    private Object[] dataList;
+    private Item[] dataList;
     private int size = 0;
     private int power = 0;
 
     public RandomizedQueue() {
-        dataList = new Object[1];
+        dataList = (Item[]) new Object[1];
     }                 // construct an empty randomized queue
 
     public boolean isEmpty() {
@@ -46,56 +46,57 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 
     public Item dequeue() {
         int rand = StdRandom.uniform(size);
-        Object o = dataList[rand];
+        Item ret = dataList[rand];
         swapEnd(rand);
         if (size < (0x1 << (power - 2))) {
             dataList = Arrays.copyOf(dataList, (0x1 << (--power)));
         }
-        return (Item) o;
+        return ret;
     }      // remove and return a random item
 
     public Item sample() {
-        return (Item) dataList[StdRandom.uniform(size)];
+        return dataList[StdRandom.uniform(size)];
     }         // return a random item (but do not remove it)
 
     @Override
     public Iterator<Item> iterator() {
-        return new RandQueueIterator(this);
+        return new RandQueueIterator<Item>(this);
     }        // return an independent iterator over items in random order
 
     public static void main(String[] args) {
-        RandomizedQueue<Integer> rq = new RandomizedQueue();
-        for (int i = 0; i < 100; i++) {
-            rq.enqueue(i);
-        }
-        for (int i : rq) {
-            System.out.println(i);
-        }
+//        RandomizedQueue<Integer> rq = new RandomizedQueue();
+//        for (int i = 0; i < 100; i++) {
+//            rq.enqueue(i);
+//        }
+//        for (int i : rq) {
+//            System.out.println(i);
+//        }
+//        rq.enqueue(Integer.SIZE);
     }  // unit testing (optional)
 
     private class RandQueueIterator<Item> implements Iterator<Item> {
 
-        private int[] inds;
+        private final int[] inds;
         private int size;
-        private RandomizedQueue<Item> rq;
+        private final RandomizedQueue<Item> rq;
 
         public RandQueueIterator(RandomizedQueue<Item> rq) {
             size = rq.size;
             this.rq = rq;
+            inds = new int[size];
             int[] order = new int[size];
             Arrays.setAll(order, i -> i);
-            int l = size;
             int rand;
-            for (int i = l; i > 0; i--) {
+            for (int i = size; i > 0; i--) {
                 rand = StdRandom.uniform(i);
-                inds[i] = order[rand];
-                order[rand] = order[size - 1];
+                inds[i - 1] = order[rand];
+                order[rand] = order[i - 1];
             }
         }
 
         @Override
         public boolean hasNext() {
-            return size <= 0;
+            return size > 0;
         }
 
         @Override
@@ -103,7 +104,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
             if (!hasNext()) {
                 throw new NoSuchElementException();
             }
-            return (Item) rq.dataList[inds[--size]];
+            return rq.dataList[inds[--size]];
         }
         
         @Override

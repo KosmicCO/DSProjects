@@ -29,22 +29,28 @@ public class Deque<Item> implements Iterable<Item> {
     }                        // return the number of items on the deque
 
     public void addFirst(Item item) {
+        if (item == null) {
+            throw new IllegalArgumentException();
+        }
         if (last == null) {
-            last = new Node(null, null, item);
+            last = new Node<Item>(null, null, item);
             last.prev = last.next = last;
         } else {
-            Node<Item> nn = new Node(last, last.next, item);
+            Node<Item> nn = new Node<Item>(last, last.next, item);
             last.next = last.next.prev = nn;
         }
         size++;
     }          // add the item to the front
 
     public void addLast(Item item) {
+        if (item == null) {
+            throw new IllegalArgumentException();
+        }
         if (last == null) {
-            last = new Node(null, null, item);
+            last = new Node<Item>(null, null, item);
             last.prev = last.next = last;
         } else {
-            Node<Item> nn = new Node(last, last.next, item);
+            Node<Item> nn = new Node<Item>(last, last.next, item);
             last.prev = last.next = nn;
             last = nn;
         }
@@ -77,10 +83,10 @@ public class Deque<Item> implements Iterable<Item> {
             rn = last.data;
             last = null;
         } else {
-            rn = last.next.data;
-            last.next = last.next.next;
-            last.next.prev = last;
-            last = last.next;
+            rn = last.data;
+            last.prev.next = last.next;
+            last.next.prev = last.prev;
+            last = last.prev;
         }
         size--;
         return rn;
@@ -89,27 +95,28 @@ public class Deque<Item> implements Iterable<Item> {
     @Override
     public Iterator<Item> iterator() {
         if (last == null) {
-            return new DequeIterator(null, 0);
+            return new DequeIterator<Item>(null, 0);
         }
-        return new DequeIterator(last.next, size);
+        return new DequeIterator<Item>(last.next, size);
     }    // return an iterator over items in order from front to end
 
     public static void main(String[] args) {
-        String[] g = {"a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p"};
-        RandomizedQueue<String> rq = new RandomizedQueue();
-        for(String s : g){
-            rq.enqueue(s);
-        }
-        for(String s : rq){
-            System.out.println(s);
-        }
+//        String[] g = {"a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p"};
+//        Deque<String> rq = new Deque();
+//        for(String s : g){
+//            rq.addFirst(s);
+//            rq.addLast(s);
+//        }
+//        for(String s : rq){
+//            System.out.println(s);
+//        }
     }   // unit testing (optional)
 
     private class Node<Item> {
 
         private Node<Item> next;
         private Node<Item> prev;
-        private Item data;
+        private final Item data;
 
         public Node(Node<Item> prev, Node<Item> next, Item data) {
             this.next = next;
@@ -143,9 +150,9 @@ public class Deque<Item> implements Iterable<Item> {
             nextData = nextData.next;
             return rn;
         }
-        
+
         @Override
-        public void remove(){
+        public void remove() {
             throw new UnsupportedOperationException();
         }
     }
