@@ -84,14 +84,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
             size = rq.size;
             this.rq = rq;
             inds = new int[size];
-            int[] order = new int[size];
-            Arrays.setAll(order, i -> i);
-            int rand;
-            for (int i = size; i > 0; i--) {
-                rand = StdRandom.uniform(i);
-                inds[i - 1] = order[rand];
-                order[rand] = order[i - 1];
-            }
+            Arrays.setAll(inds, i -> i);
         }
 
         @Override
@@ -104,11 +97,14 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
             if (!hasNext()) {
                 throw new NoSuchElementException();
             }
-            return rq.dataList[inds[--size]];
+            int rand = StdRandom.uniform(size);
+            int nind = inds[rand];
+            inds[rand] = inds[--size];
+            return rq.dataList[nind];
         }
-        
+
         @Override
-        public void remove(){
+        public void remove() {
             throw new UnsupportedOperationException();
         }
     }

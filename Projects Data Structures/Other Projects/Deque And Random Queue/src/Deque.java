@@ -1,4 +1,5 @@
 
+import edu.princeton.cs.algs4.StdRandom;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -51,8 +52,8 @@ public class Deque<Item> implements Iterable<Item> {
             last.prev = last.next = last;
         } else {
             Node<Item> nn = new Node<Item>(last, last.next, item);
-            last.prev = last.next = nn;
-            last = nn;
+            last.next.prev = nn;
+            last.next = last = nn;
         }
         size++;
     }           // add the item to the end
@@ -101,15 +102,27 @@ public class Deque<Item> implements Iterable<Item> {
     }    // return an iterator over items in order from front to end
 
     public static void main(String[] args) {
-//        String[] g = {"a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p"};
-//        Deque<String> rq = new Deque();
-//        for(String s : g){
-//            rq.addFirst(s);
-//            rq.addLast(s);
-//        }
-//        for(String s : rq){
-//            System.out.println(s);
-//        }
+        String[] g = {"a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p"};
+        Deque<String> rq = new Deque();
+        for(String s : g){
+            if(StdRandom.bernoulli()){
+                rq.addFirst(s);
+                System.out.println("First: " + s);
+            }else{
+                rq.addLast(s);
+                System.out.println("Last:  " + s);
+            }
+            if(StdRandom.bernoulli(0.9)){
+                if(StdRandom.bernoulli()){
+                    System.out.println("FFF:" + rq.removeFirst());
+                }else{
+                    System.out.println("LLL:" + rq.removeLast());
+                }
+            }
+        }
+        for(String s : rq){
+            System.out.println(s);
+        }
     }   // unit testing (optional)
 
     private class Node<Item> {
