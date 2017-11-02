@@ -33,6 +33,9 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     }                      // return the number of items on the randomized queue
 
     public void enqueue(Item item) {
+        if(item == null){
+            throw new IllegalArgumentException();
+        }
         if (size >= (0x1 << power)) {
             dataList = Arrays.copyOf(dataList, (0x1) << (++power));
         }
@@ -45,16 +48,23 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     }
 
     public Item dequeue() {
+        if (size == 0) {
+            throw new NoSuchElementException();
+        }
         int rand = StdRandom.uniform(size);
         Item ret = dataList[rand];
         swapEnd(rand);
-        if (size < (0x1 << (power - 2))) {
+        if (power > 0 && size < (0x1 << (power - 2))) {
             dataList = Arrays.copyOf(dataList, (0x1 << (--power)));
         }
+        size--;
         return ret;
     }      // remove and return a random item
 
     public Item sample() {
+        if (size == 0) {
+            throw new NoSuchElementException();
+        }
         return dataList[StdRandom.uniform(size)];
     }         // return a random item (but do not remove it)
 
