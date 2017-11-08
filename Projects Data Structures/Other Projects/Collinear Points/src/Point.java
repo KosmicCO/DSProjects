@@ -3,6 +3,7 @@ import edu.princeton.cs.algs4.StdDraw;
 import java.util.Comparator;
 
 /*
+ * http://coursera.cs.princeton.edu/algs4/assignments/collinear.html
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
@@ -31,7 +32,7 @@ public class Point implements Comparable<Point>{
     }
     
     public Comparator<Point> slopeOrder(){
-        return (t, s) -> compareDouble(slopeTo(t), slopeTo(s));
+        return (t, s) -> Double.compare(slopeTo(t), slopeTo(s));
     }
     
     public void draw(){
@@ -40,10 +41,6 @@ public class Point implements Comparable<Point>{
     
     public void drawTo(Point t){
         StdDraw.line(x, y, t.x, t.y);
-    }
-    
-    private int compareDouble(double a, double b){
-        return (Math.abs(a - b) < 1.0E-14) ? 0 : ((a > b) ? 1 : -1);
     }
     
     @Override
