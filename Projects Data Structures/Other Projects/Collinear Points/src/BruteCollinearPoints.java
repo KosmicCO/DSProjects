@@ -58,7 +58,6 @@ public class BruteCollinearPoints {
                             } else if (points[l].compareTo(min) < 0) {
                                 min = points[l];
                             }
-
                             segList.add(new LineSegment(min, max));
                         }
                     }
@@ -66,7 +65,8 @@ public class BruteCollinearPoints {
             }
         }
 
-        segments = (LineSegment[]) segList.toArray();
+        
+        segments = (LineSegment[]) segList.toArray(new LineSegment[segList.size()]);
     }
 
     public int numberOfSegments() {

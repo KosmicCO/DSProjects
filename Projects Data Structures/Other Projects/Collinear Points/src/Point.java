@@ -36,7 +36,7 @@ public class Point implements Comparable<Point>{
     }
     
     public void draw(){
-        StdDraw.square(x, y, 0.05);
+        StdDraw.filledSquare(x, y, 100);
     }
     
     public void drawTo(Point t){
