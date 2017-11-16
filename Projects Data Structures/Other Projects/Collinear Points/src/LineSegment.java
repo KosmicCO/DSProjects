@@ -24,6 +24,6 @@ public class LineSegment {
     
     @Override
     public String toString(){
-        return p + "to" + q;
+        return p + " -> " + q;
     }
 }

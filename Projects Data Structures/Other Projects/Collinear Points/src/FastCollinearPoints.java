@@ -12,7 +12,7 @@ import java.util.Comparator;
  *
  * @author cbarnum18
  */
-public class FastCollinearPoints {
+public class FastCollinearPoints implements CollinearPoints {
 
     private Point[] points;
     private LineSegment[] segments;
@@ -40,76 +40,50 @@ public class FastCollinearPoints {
         Point[] pc = Arrays.copyOf(points, points.length);
 
         ArrayList<LineSegment> segs = new ArrayList<LineSegment>();
-        
+
         Point a;
         Comparator<Point> cp;
-        Point pushed = null;
-        int ind, mode;
-        boolean running;
-        for (int i = 0; i < points.length - 3; i++) {
+        int pushInd, state, count;
+        Point max, min;
+        for (int i = 0; i < points.length; i++) {
 
             a = points[i];
-
             cp = a.slopeOrder();
-            Arrays.sort(pc, a.slopeOrder());
-         
-            ind = 0;
-            mode = 0;
-            running = true;
-            while (running) {
-                switch (mode) {
-                    case 0:
-                        if (ind > 0 && cp.compare(pc[ind], pc[ind - 1]) == 0) {
-                            --ind;
-                        }
-                        mode = 1;
-                        break;
-                    case 1:
-                        if (ind >= points.length - 2) {
-                            mode = 3;
-                            break;
-                        }
+            Arrays.sort(pc, cp);
 
-                        ind += 2;
+            pushInd = 1;
+            count = 0;
+            min = max = a;
 
-                        if (cp.compare(pc[ind - 2], pc[ind]) == 0) {
-                            pushed = pc[ind];
-                            mode = 2;
-                        } else {
-                            mode = 0;
-                        }
-                        break;
-                    case 2:
-                        while (true) {
-                            if(ind >= points.length - 2){
-                                mode = 3;
-                                break;
-                            }
-                            ind += 2;
-                            if (cp.compare(pc[ind - 2], pc[ind]) != 0) {
-                                if(cp.compare(pc[ind - 2], pc[ind - 1]) == 0){
-                                    segs.add(new LineSegment(pushed, pc[ind - 1]));
-                                    mode = 1;
-                                }else{
-                                    segs.add(new LineSegment(pushed, pc[ind - 2]));
-                                    mode = 0;
-                                }
-                                break;
-                            }
-                        }
-                        break;
-                    case 3:
-                        running = false;
+            for (int j = 1; j < points.length; j++) {
+
+                if (cp.compare(pc[pushInd], pc[j]) == 0) {
+                    ++count;
+                    if (min.compareTo(pc[j]) < 0) {
+                        min = pc[j];
+                    } else if (max.compareTo(pc[j]) > 0) {
+                        max = pc[j];
+                    }
+
+                } else {
+                    if (count >= 3) {
+                        segs.add(new LineSegment(min, max));
+                    }
+                    min = max = a;
+                    count = 0;
+                    pushInd = j;
+                    state = 1;
                 }
             }
         }
+        segments = segs.toArray(new LineSegment[segs.size()]);
     }
 
     public int numberOfSegments() {
-
+        return segments.length;
     }
 
     public LineSegment[] segments() {
-
+        return segments;
     }
 }

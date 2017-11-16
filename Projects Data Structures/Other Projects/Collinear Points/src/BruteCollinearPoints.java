@@ -13,7 +13,7 @@ import java.util.List;
  *
  * @author cbarnum18
  */
-public class BruteCollinearPoints {
+public class BruteCollinearPoints implements CollinearPoints{
 
     private LineSegment[] segments;
 
