@@ -12,16 +12,16 @@ import java.util.Comparator;
  *
  * @author cbarnum18
  */
-public class FastCollinearPoints implements CollinearPoints {
+public class FastCollinearPoints { //implements CollinearPoints {
 
-    private Point[] points;
-    private LineSegment[] segments;
+    private final Point[] points;
+    private final LineSegment[] segments;
 
-    public FastCollinearPoints(Point[] points) {
-        if (points == null) {
+    public FastCollinearPoints(Point[] poi) {
+        if (poi == null) {
             throw new IllegalArgumentException();
         }
-        this.points = points;
+        this.points = poi;
 
         for (Point point : points) {
             if (point == null) {
@@ -39,11 +39,12 @@ public class FastCollinearPoints implements CollinearPoints {
 
         Point[] pc = Arrays.copyOf(points, points.length);
 
-        ArrayList<LineSegment> segs = new ArrayList<LineSegment>();
+        ArrayList<Point> mins = new ArrayList<Point>();
+        ArrayList<Point> maxs = new ArrayList<Point>();
 
         Point a;
         Comparator<Point> cp;
-        int pushInd, state, count;
+        int pushInd, count;
         Point max, min;
         for (int i = 0; i < points.length; i++) {
 
@@ -66,17 +67,32 @@ public class FastCollinearPoints implements CollinearPoints {
                     }
 
                 } else {
-                    if (count >= 3) {
-                        segs.add(new LineSegment(min, max));
+
+                    if (count >= 2) {
+                        boolean newS = true;
+                        for (int k = 0; k < mins.size(); k++) {
+                            if (mins.get(k).compareTo(min) == 0) {
+                                if (maxs.get(k).compareTo(max) == 0) {
+                                    break;
+                                }
+                            }
+                        }
+                        if (newS) {
+                            mins.add(min);
+                            maxs.add(max);
+                        }
                     }
                     min = max = a;
                     count = 0;
                     pushInd = j;
-                    state = 1;
                 }
             }
         }
-        segments = segs.toArray(new LineSegment[segs.size()]);
+
+        segments = new LineSegment[mins.size()];
+        for (int i = 0; i < mins.size(); i++) {
+            segments[i] = new LineSegment(mins.get(i), maxs.get(i));
+        }
     }
 
     public int numberOfSegments() {
@@ -84,6 +100,6 @@ public class FastCollinearPoints implements CollinearPoints {
     }
 
     public LineSegment[] segments() {
-        return segments;
+        return Arrays.copyOf(segments, segments.length);
     }
 }

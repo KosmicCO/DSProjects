@@ -17,7 +17,7 @@ public class CollinearTest {
     public static void main(String[] args) {
 
         // read the n points from a file
-        In in = new In("collinear-testing/collinear/input100.txt");
+        In in = new In("collinear-testing/collinear/rs1423.txt");
         if (args.length == 1) {
             in = new In(args[0]);
         }
@@ -40,16 +40,16 @@ public class CollinearTest {
 
         // print and draw the line segments
         CollinearPoints collinear;
-        if (true) {
-            collinear = new FastCollinearPoints(points);
-        } else {
-            collinear = new BruteCollinearPoints(points);
-        }
-        for (LineSegment segment : collinear.segments()) {
-            StdOut.println(segment);
-            segment.draw();
-        }
-        StdDraw.show();
-        StdOut.print("done");
+//        if (true) {
+//            collinear = new FastCollinearPoints(points);
+//        } else {
+//            collinear = new BruteCollinearPoints(points);
+//        }
+//        for (LineSegment segment : collinear.segments()) {
+//            StdOut.println(segment);
+//            segment.draw();
+//        }
+//        StdDraw.show();
+//        StdOut.print("done");
     }
 }

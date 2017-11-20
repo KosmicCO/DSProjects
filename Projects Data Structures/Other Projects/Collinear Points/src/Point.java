@@ -8,43 +8,42 @@ import java.util.Comparator;
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 /**
  *
  * @author cbarnum18
  */
-public class Point implements Comparable<Point>{
+public class Point implements Comparable<Point> {
 
-    private int x, y;
-    
-    public Point(int x, int y){
+    private final int x, y;
+
+    public Point(int x, int y) {
         this.x = x;
         this.y = y;
     }
-    
+
     @Override
     public int compareTo(Point t) {
         return (t.y == y) ? (t.x - x) : (t.y - y);
     }
-    
-    public double slopeTo(Point t){
+
+    public double slopeTo(Point t) {
         return ((double) (t.y - y)) / (t.x - x);
     }
-    
-    public Comparator<Point> slopeOrder(){
+
+    public Comparator<Point> slopeOrder() {
         return (t, s) -> Double.compare(slopeTo(t), slopeTo(s));
     }
-    
-    public void draw(){
-        StdDraw.filledSquare(x, y, 100);
+
+    public void draw() {
+        StdDraw.point(x, y);
     }
-    
-    public void drawTo(Point t){
+
+    public void drawTo(Point t) {
         StdDraw.line(x, y, t.x, t.y);
     }
-    
+
     @Override
-    public String toString(){
+    public String toString() {
         return "<" + x + ", " + y + ">";
     }
 }
