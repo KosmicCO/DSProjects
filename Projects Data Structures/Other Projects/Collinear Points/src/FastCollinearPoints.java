@@ -12,16 +12,15 @@ import java.util.Comparator;
  *
  * @author cbarnum18
  */
-public class FastCollinearPoints { //implements CollinearPoints {
+public class FastCollinearPoints { // implements CollinearPoints {
 
-    private final Point[] points;
     private final LineSegment[] segments;
 
     public FastCollinearPoints(Point[] poi) {
         if (poi == null) {
             throw new IllegalArgumentException();
         }
-        this.points = poi;
+        Point[] points = poi;
 
         for (Point point : points) {
             if (point == null) {
@@ -42,34 +41,31 @@ public class FastCollinearPoints { //implements CollinearPoints {
         ArrayList<Point> mins = new ArrayList<Point>();
         ArrayList<Point> maxs = new ArrayList<Point>();
 
-        Point a;
         Comparator<Point> cp;
         int pushInd, count;
         Point max, min;
-        for (int i = 1; i < points.length; i++) {
-
-            a = points[0];
-            cp = a.slopeOrder();
+        for (Point point : points) {
+            cp = point.slopeOrder();
             Arrays.sort(pc, cp);
-
             pushInd = 1;
             count = 0;
-            min = max = a;
+            min = point;
+            max = point;
+            int j = 1;
+            while (j <= points.length) {
 
-            for (int j = 1; j < points.length; j++) {
-
-                if (cp.compare(pc[pushInd], pc[j]) == 0) {
+                if (j < points.length && cp.compare(pc[pushInd], pc[j]) == 0) {
                     ++count;
-                    if (min.compareTo(pc[j]) > 0) {
+                    if (min.compareTo(pc[j]) < 0) {
                         min = pc[j];
                     }
-                    if (max.compareTo(pc[j]) < 0) {
+                    if (max.compareTo(pc[j]) > 0) {
                         max = pc[j];
                     }
 
                 } else {
 
-                    if (count >= 2) {
+                    if (count >= 3) {
                         boolean newS = true;
                         for (int k = 0; k < mins.size(); k++) {
                             if (mins.get(k).compareTo(min) == 0) {
@@ -84,11 +80,16 @@ public class FastCollinearPoints { //implements CollinearPoints {
                             maxs.add(max);
                         }
                     }
-                    min = max = a;
+                    if (j >= points.length) {
+                        break;
+                    }
+                    min = point;
+                    max = point;
                     count = 0;
                     pushInd = j;
                     j--;
                 }
+                j++;
             }
         }
 

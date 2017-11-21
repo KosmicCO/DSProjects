@@ -39,7 +39,8 @@ public class BruteCollinearPoints { // implements CollinearPoints{
                         ref = points[i].slopeOrder();
                         if (ref.compare(points[j], points[k]) == 0
                                 && ref.compare(points[k], points[m]) == 0) {
-                            min = max = points[i];
+                            min = points[i];
+                            max = points[i];
 
                             if (points[j].compareTo(max) > 0) {
                                 max = points[j];

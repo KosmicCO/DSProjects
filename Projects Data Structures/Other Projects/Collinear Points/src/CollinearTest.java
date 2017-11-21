@@ -17,7 +17,7 @@ public class CollinearTest {
     public static void main(String[] args) {
 
         // read the n points from a file
-        In in = new In("collinear-testing/collinear/input10.txt");
+        In in = new In("collinear-testing/collinear/input100.txt");
         if (args.length == 1) {
             in = new In(args[0]);
         }
@@ -44,7 +44,6 @@ public class CollinearTest {
         int s = 0;
         for (LineSegment segment : collinear.segments()) {
             StdOut.println(segment);
-            StdDraw.setPenColor(s, 0, 0);
             s += 40;
             segment.draw();
         }
