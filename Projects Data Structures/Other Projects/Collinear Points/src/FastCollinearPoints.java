@@ -46,9 +46,9 @@ public class FastCollinearPoints { //implements CollinearPoints {
         Comparator<Point> cp;
         int pushInd, count;
         Point max, min;
-        for (int i = 0; i < points.length; i++) {
+        for (int i = 1; i < points.length; i++) {
 
-            a = points[i];
+            a = points[0];
             cp = a.slopeOrder();
             Arrays.sort(pc, cp);
 
@@ -60,9 +60,10 @@ public class FastCollinearPoints { //implements CollinearPoints {
 
                 if (cp.compare(pc[pushInd], pc[j]) == 0) {
                     ++count;
-                    if (min.compareTo(pc[j]) < 0) {
+                    if (min.compareTo(pc[j]) > 0) {
                         min = pc[j];
-                    } else if (max.compareTo(pc[j]) > 0) {
+                    }
+                    if (max.compareTo(pc[j]) < 0) {
                         max = pc[j];
                     }
 
@@ -73,6 +74,7 @@ public class FastCollinearPoints { //implements CollinearPoints {
                         for (int k = 0; k < mins.size(); k++) {
                             if (mins.get(k).compareTo(min) == 0) {
                                 if (maxs.get(k).compareTo(max) == 0) {
+                                    newS = false;
                                     break;
                                 }
                             }
@@ -85,6 +87,7 @@ public class FastCollinearPoints { //implements CollinearPoints {
                     min = max = a;
                     count = 0;
                     pushInd = j;
+                    j--;
                 }
             }
         }
