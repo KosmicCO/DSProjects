@@ -27,8 +27,12 @@ public class Point implements Comparable<Point> {
     }
 
     public double slopeTo(Point t) {
-        if (t.y - y == 0 && t.x - x == 0) {
-            return Double.NEGATIVE_INFINITY;
+        if (t.y == y) {
+            if(t.x == x){
+                return Double.NEGATIVE_INFINITY;
+            }else{
+                return 0.0;
+            }
         }
         if(t.x == x){
             return Double.POSITIVE_INFINITY;

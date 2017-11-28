@@ -20,7 +20,7 @@ public class FastCollinearPoints { // implements CollinearPoints {
         if (poi == null) {
             throw new IllegalArgumentException();
         }
-        Point[] points = poi;
+        Point[] points = Arrays.copyOf(poi, poi.length);
 
         for (Point point : points) {
             if (point == null) {
