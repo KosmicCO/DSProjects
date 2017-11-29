@@ -20,12 +20,13 @@ public class FastCollinearPoints { // implements CollinearPoints {
         if (poi == null) {
             throw new IllegalArgumentException();
         }
-        Point[] points = Arrays.copyOf(poi, poi.length);
+        Point[] points = new Point[poi.length];
 
-        for (Point point : points) {
-            if (point == null) {
+        for (int i = 0; i < poi.length; i++) {
+            if (poi[i] == null) {
                 throw new IllegalArgumentException();
             }
+            points[i] = poi[i];
         }
 
         Arrays.sort(points);

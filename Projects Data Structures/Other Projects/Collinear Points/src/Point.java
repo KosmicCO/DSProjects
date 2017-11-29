@@ -23,18 +23,18 @@ public class Point implements Comparable<Point> {
 
     @Override
     public int compareTo(Point t) {
-        return (t.y == y) ? (t.x - x) : (t.y - y);
+        return (t.y == y) ? (x - t.x) : (y - t.y);
     }
 
     public double slopeTo(Point t) {
         if (t.y == y) {
-            if(t.x == x){
+            if (t.x == x) {
                 return Double.NEGATIVE_INFINITY;
-            }else{
+            } else {
                 return 0.0;
             }
         }
-        if(t.x == x){
+        if (t.x == x) {
             return Double.POSITIVE_INFINITY;
         }
         return ((double) (t.y - y)) / (t.x - x);
