@@ -17,16 +17,20 @@ public class CollinearTest {
     public static void main(String[] args) {
 
         // read the n points from a file
-        In in = new In("collinear-testing/collinear/input100.txt");
+        In in = new In("collinear-testing/collinear/test.txt");
         if (args.length == 1) {
             in = new In(args[0]);
         }
         int n = in.readInt();
         Point[] points = new Point[n];
         for (int i = 0; i < n; i++) {
+            try{
             int x = in.readInt();
             int y = in.readInt();
             points[i] = new Point(x, y);
+            }catch(Exception e){
+                points[i] = null;
+            }
         }
 
         // draw the points
@@ -34,10 +38,15 @@ public class CollinearTest {
         StdDraw.setXscale(0, 32768);
         StdDraw.setYscale(0, 32768);
         for (Point p : points) {
+            if(p != null){
             p.draw();
+            }
         }
         StdDraw.show();
 
+//        Point[] ppp = new Point[1];
+//        ppp[0] = null;
+        
         // print and draw the line segments
         FastCollinearPoints collinear = new FastCollinearPoints(points);
         //BruteCollinearPoints collinear = new BruteCollinearPoints(points);

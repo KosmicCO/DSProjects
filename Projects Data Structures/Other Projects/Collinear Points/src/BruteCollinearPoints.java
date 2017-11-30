@@ -17,17 +17,20 @@ public class BruteCollinearPoints { // implements CollinearPoints{
 
     private final LineSegment[] segments;
 
-    public BruteCollinearPoints(Point[] points) {
-        if (points == null) {
+    public BruteCollinearPoints(Point[] poi) {
+        if (poi == null) {
             throw new IllegalArgumentException();
         }
-
-        Arrays.sort(points);
-        for (int i = 0; i < points.length - 1; i++) {
-            if (points[i] == null || points[i] == points[i + 1]) {
+        
+        for (int i = 0; i < poi.length - 1; i++) {
+            if (poi[i] == null || poi[i] == poi[i + 1]) {
                 throw new IllegalArgumentException();
             }
         }
+        
+        Point[] points = Arrays.copyOf(poi, poi.length);
+        Arrays.sort(points);
+        
 
         List<LineSegment> segList = new ArrayList<LineSegment>();
         Point min, max;
