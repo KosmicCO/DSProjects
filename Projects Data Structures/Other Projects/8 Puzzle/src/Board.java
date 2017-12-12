@@ -1,3 +1,6 @@
+
+import java.util.Arrays;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -10,8 +13,13 @@
  */
 public class Board {
     
+    private int[][] brd;
+    
     public Board(int[][] blocks){
-        
+        brd = new int[blocks.length][blocks.length];
+        for (int i = 0; i < brd.le; i++) {
+            
+        }
     }
     
     public int dimension(){
