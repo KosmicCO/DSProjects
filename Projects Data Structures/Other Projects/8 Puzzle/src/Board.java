@@ -20,7 +20,7 @@ public class Board {
     {-1, 0}};
 
     private final int[][] brd;
-    private int moves;
+    private final int moves;
     private int manhattan, hamming;
     private int zeroX, zeroY;
     private final Board parent;
@@ -37,11 +37,11 @@ public class Board {
                 }
             }
         }
+        
+        moves = 0;
         manhattan = fullManhattan();
-        hamming = -1;
         hamming = fullHamming();
         parent = null;
-        moves = 0;
     }
 
     private Board(Board parent) {
@@ -67,11 +67,13 @@ public class Board {
 
     private int fullHamming() {
         int sum = 0;
+        int num = 1;
         for (int i = 0; i < brd.length; i++) {
             for (int j = 0; j < brd.length; j++) {
-                if (brd[i][j] != i * brd.length + j && !(i == brd.length && j == brd.length)) {
+                if (brd[i][j] == num && !(i == brd.length - 1 && j == brd.length - 1)) {
                     sum++;
                 }
+                num++;
             }
         }
         return sum + moves;
@@ -91,8 +93,8 @@ public class Board {
         for (int i = 0; i < brd.length; i++) {
             for (int j = 0; j < brd.length; j++) {
                 num = brd[i][j];
-                if (num == 0) {
-                    sum += (i - (num % brd.length)) & 0x7FFF_FFFF + (j - (num / brd.length)) & 0x7FFF_FFFF;
+                if (num != -1) {
+                    sum += Math.abs(i - (num % brd.length)) + Math.abs(j - (num / brd.length));
                 }
             }
         }
@@ -187,13 +189,34 @@ public class Board {
                 work = new Board(this);
                 work.brd[zeroX][zeroY] = work.brd[x][y];
                 work.brd[x][y] = 0;
-                work.manhattan
+                work.manhattan = moveManhattan(zeroX, zeroY, brd[zeroX][zeroY], i) + manhattan;
+                ret.add(work);
             }
         }
+
+        return ret;
     }
 
     @Override
     public String toString() {
+        StringBuilder s = new StringBuilder();
+        s.append(brd.length).append("\n");
+        for (int[] brd1 : brd) {
+            for (int j = 0; j < brd.length; j++) {
+                s.append(String.format("%2d ", brd1[j]));
+            }
+            s.append("\n");
+        }
+        return s.toString();
+    }
 
+    public static void main(String[] args) {
+        int[][] bbb = {{1, 2, 3},
+            {4, 5, 6},
+            {7, 0, 8}};
+        
+        Board b = new Board(bbb);
+        System.out.println(b);
+        System.out.println(b.manhattan());
     }
 }
