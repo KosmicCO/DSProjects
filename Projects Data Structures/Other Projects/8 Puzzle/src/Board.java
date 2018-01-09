@@ -21,7 +21,8 @@ public class Board {
 
     private final int[][] brd;
     private final int moves;
-    private int manhattan, hamming;
+    private int manhattan;
+    private final int hamming;
     private int zeroX, zeroY;
     private final Board parent;
 
@@ -58,7 +59,7 @@ public class Board {
         }
         manhattan = hamming = -1;
         this.parent = parent;
-        moves = parent.moves;
+        moves = parent.moves + 1;
     }
 
     public int dimension() {
@@ -68,9 +69,9 @@ public class Board {
     private int fullHamming() {
         int sum = 0;
         int num = 1;
-        for (int i = 0; i < brd.length; i++) {
+        for (int[] brd1 : brd) {
             for (int j = 0; j < brd.length; j++) {
-                if (brd[i][j] == num && !(i == brd.length - 1 && j == brd.length - 1)) {
+                if (brd1[j] != num && brd1[j] != 0) {
                     sum++;
                 }
                 num++;
@@ -92,9 +93,9 @@ public class Board {
         int num;
         for (int i = 0; i < brd.length; i++) {
             for (int j = 0; j < brd.length; j++) {
-                num = brd[i][j];
+                num = brd[i][j] - 1;
                 if (num != -1) {
-                    sum += Math.abs(i - (num % brd.length)) + Math.abs(j - (num / brd.length));
+                    sum += Math.abs((num / brd.length) - i) + Math.abs((num % brd.length) - j);
                 }
             }
         }
@@ -103,30 +104,32 @@ public class Board {
 
     private int moveManhattan(int x, int y, int num, int d) {
         int ind;
-        if ((d & 0x0000_0001) == 1) {
-            ind = num % brd.length;
+        if ((d & 0x0000_0001) == 0) {
+            ind = num / brd.length;
             if (x > ind) {
                 return -DIR[d][0];
             } else if (x < ind) {
                 return DIR[d][0];
             }
         } else {
-            ind = num / brd.length;
+            ind = num % brd.length;
             if (y > ind) {
-                return -DIR[d][0];
+                return -DIR[d][1];
             } else if (y < ind) {
-                return DIR[d][0];
+                return DIR[d][1];
             }
         }
         return 1;
     }
 
     public boolean isGoal() {
+        int num = 1;
         for (int i = 0; i < brd.length; i++) {
             for (int j = 0; j < brd.length; j++) {
-                if (brd[i][j] != i * brd.length + j && !(i == brd.length && j == brd.length)) {
+                if (brd[i][j] != num && !(i == brd.length - 1 && j == brd.length - 1)) {
                     return false;
                 }
+                num++;
             }
         }
         return true;
@@ -185,11 +188,14 @@ public class Board {
         for (int i = 0; i < 4; i++) {
             x = zeroX + DIR[i][0];
             y = zeroY + DIR[i][1];
+            if(x < 0 || brd.length <= x || y < 0 || brd.length <= y){
+                continue;
+            }
             if (0 <= x && x < brd.length && 0 <= y && y <= brd.length) {
                 work = new Board(this);
                 work.brd[zeroX][zeroY] = work.brd[x][y];
                 work.brd[x][y] = 0;
-                work.manhattan = moveManhattan(zeroX, zeroY, brd[zeroX][zeroY], i) + manhattan;
+                work.manhattan = moveManhattan(zeroX, zeroY, brd[zeroX][zeroY], i) + manhattan + moves + 1;
                 ret.add(work);
             }
         }
@@ -213,10 +219,15 @@ public class Board {
     public static void main(String[] args) {
         int[][] bbb = {{1, 2, 3},
             {4, 5, 6},
-            {7, 0, 8}};
+            {7, 8, 0}};
         
         Board b = new Board(bbb);
         System.out.println(b);
         System.out.println(b.manhattan());
+        Iterable<Board> tests = b.neighbors();
+        
+        for(Board bt : tests){
+            System.out.println(bt + "\n" + bt.manhattan());
+        }
     }
 }
