@@ -24,7 +24,6 @@ public class Board {
     private int manhattan;
     private final int hamming;
     private int zeroX, zeroY;
-    private final Board parent;
 
     public Board(int[][] blocks) {
         brd = new int[blocks.length][blocks[0].length];
@@ -38,11 +37,10 @@ public class Board {
                 }
             }
         }
-        
+
         moves = 0;
         manhattan = fullManhattan();
         hamming = fullHamming();
-        parent = null;
     }
 
     private Board(Board parent) {
@@ -58,7 +56,6 @@ public class Board {
             }
         }
         manhattan = hamming = -1;
-        this.parent = parent;
         moves = parent.moves + 1;
     }
 
@@ -77,15 +74,15 @@ public class Board {
                 num++;
             }
         }
-        return sum + moves;
+        return sum;
     }
 
     public int hamming() {
-        return hamming;
+        return hamming + moves;
     }
 
     public int manhattan() {
-        return manhattan;
+        return manhattan + moves;
     }
 
     private int fullManhattan() {
@@ -105,21 +102,21 @@ public class Board {
     private int moveManhattan(int x, int y, int num, int d) {
         int ind;
         if ((d & 0x0000_0001) == 0) {
-            ind = num / brd.length;
-            if (x > ind) {
-                return -DIR[d][0];
-            } else if (x < ind) {
-                return DIR[d][0];
-            }
-        } else {
             ind = num % brd.length;
-            if (y > ind) {
+            if (x > ind) {
                 return -DIR[d][1];
-            } else if (y < ind) {
+            } else if (x < ind) {
                 return DIR[d][1];
             }
+        } else {
+            ind = num / brd.length;
+            if (y > ind) {
+                return -DIR[d][0];
+            } else if (y < ind) {
+                return DIR[d][0];
+            }
         }
-        return 1;
+        return 0;
     }
 
     public boolean isGoal() {
@@ -188,14 +185,14 @@ public class Board {
         for (int i = 0; i < 4; i++) {
             x = zeroX + DIR[i][0];
             y = zeroY + DIR[i][1];
-            if(x < 0 || brd.length <= x || y < 0 || brd.length <= y){
+            if (x < 0 || brd.length <= x || y < 0 || brd.length <= y) {
                 continue;
             }
             if (0 <= x && x < brd.length && 0 <= y && y <= brd.length) {
                 work = new Board(this);
                 work.brd[zeroX][zeroY] = work.brd[x][y];
                 work.brd[x][y] = 0;
-                work.manhattan = moveManhattan(zeroX, zeroY, brd[zeroX][zeroY], i) + manhattan + moves + 1;
+                work.manhattan = moveManhattan(zeroX, zeroY, brd[zeroX][zeroY], i) + manhattan;
                 ret.add(work);
             }
         }
@@ -218,15 +215,15 @@ public class Board {
 
     public static void main(String[] args) {
         int[][] bbb = {{1, 2, 3},
-            {4, 5, 6},
-            {7, 8, 0}};
-        
+        {4, 5, 6},
+        {7, 0, 8}};
+
         Board b = new Board(bbb);
         System.out.println(b);
         System.out.println(b.manhattan());
         Iterable<Board> tests = b.neighbors();
-        
-        for(Board bt : tests){
+
+        for (Board bt : tests) {
             System.out.println(bt + "\n" + bt.manhattan());
         }
     }
