@@ -170,15 +170,15 @@ public class Board {
         return true;
     }
 
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 67 * hash + Arrays.deepHashCode(this.brd);
-        return hash;
-    }
+//    @Override
+//    public int hashCode() {
+//        int hash = 7;
+//        hash = 67 * hash + Arrays.deepHashCode(this.brd);
+//        return hash;
+//    }
 
     public Iterable<Board> neighbors() {
-        List<Board> ret = new ArrayList();
+        List<Board> ret = new ArrayList<Board>();
         int x, y;
         Board work;
 
@@ -192,6 +192,8 @@ public class Board {
                 work = new Board(this);
                 work.brd[zeroX][zeroY] = work.brd[x][y];
                 work.brd[x][y] = 0;
+                work.zeroX = x;
+                work.zeroY = y;
                 work.manhattan = moveManhattan(zeroX, zeroY, brd[zeroX][zeroY], i) + manhattan;
                 ret.add(work);
             }

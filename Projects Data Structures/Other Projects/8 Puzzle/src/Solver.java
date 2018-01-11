@@ -17,39 +17,48 @@ import java.util.List;
  */
 public class Solver {
 
-    private int moves;
-    private boolean solvable;
-    private final List<Board> steps;
+    private final int moves;
+    private final boolean solvable;
+    private final Iterable<Board> steps;
 
     public Solver(Board initial) {
-        steps = new ArrayList();
-        MinPQ<Board> regQueue = new MinPQ();
-        MinPQ<Board> othQueue = new MinPQ();
+        MinPQ<Node> regQueue = new MinPQ<Node>();
+        MinPQ<Node> othQueue = new MinPQ<Node>();
 
-        Board next = initial;
-        Board nTwn = initial.twin();
+        Node next = new Node(initial, null);
+        Node nTwn = new Node(initial.twin(), null);
 
-        while (!(next.isGoal() || nTwn.isGoal())) {
-            for (Board neighbor : next.neighbors()) {
-                regQueue.insert(neighbor);
+        while (!(next.brd.isGoal() || nTwn.brd.isGoal())) {
+
+            for (Board neighbor : next.brd.neighbors()) {
+
+                if (next.parent != null && next.parent.brd.equals(neighbor)) {
+                    continue;
+                }
+
+                regQueue.insert(new Node(neighbor, next));
             }
 
-            for (Board neighbor : nTwn.neighbors()) {
-                othQueue.insert(neighbor);
+            for (Board neighbor : nTwn.brd.neighbors()) {
+
+                if (next.parent != null && nTwn.parent.brd.equals(neighbor)) {
+                    continue;
+                }
+
+                othQueue.insert(new Node(neighbor, nTwn));
             }
 
             next = regQueue.delMin();
             nTwn = othQueue.delMin();
-            moves++;
         }
 
-        System.out.println(next);
-        System.out.println(nTwn);
-        System.out.println(moves);
+        solvable = next.brd.isGoal();
+        steps = next.steps();
+        moves = next.length;
     }
 
     public boolean isSolvable() {
-        return false;
+        return solvable;
     }
 
     public int moves() {
@@ -57,11 +66,11 @@ public class Solver {
     }
 
     public Iterable<Board> solution() {
-        return null;
+        return steps;
     }
 
     public static void main(String[] args) {
-        
+
         In in = new In(args[0]);
         int n = in.readInt();
         int[][] blocks = new int[n][n];
@@ -76,13 +85,51 @@ public class Solver {
         Solver solver = new Solver(initial);
 
         // print solution to standard output
-//        if (!solver.isSolvable()) {
-//            StdOut.println("No solution possible");
-//        } else {
-//            StdOut.println("Minimum number of moves = " + solver.moves());
-//            for (Board board : solver.solution()) {
-//                StdOut.println(board);
-//            }
-//        }
+        if (!solver.isSolvable()) {
+            StdOut.println("No solution possible");
+        } else {
+            StdOut.println("Minimum number of moves = " + solver.moves());
+            for (Board board : solver.solution()) {
+                StdOut.println(board);
+            }
+        }
+    }
+
+    private class Node implements Comparable<Node> {
+
+        private final Board brd;
+        private final Node parent;
+        private int length;
+
+        public Node(Board b, Node p) {
+            brd = b;
+            parent = p;
+            length = 0;
+        }
+
+        @Override
+        public int compareTo(Node o) {
+            return brd.manhattan() - o.brd.manhattan();
+        }
+
+        public Iterable<Board> steps() {
+            List<Board> step = new ArrayList<Board>();
+            Node n = this;
+            length = -1;
+
+            while (n != null) {
+                step.add(n.brd);
+                n = n.parent;
+                length++;
+            }
+
+            return step;
+        }
+
+        @Override
+        public String toString() {
+            return brd.toString();
+        }
+
     }
 }

@@ -25,7 +25,6 @@
  *  puzzle45.txt: 45
  *
  ***************************************************************************** */
-
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdOut;
 
@@ -33,13 +32,13 @@ public class PuzzleChecker {
 
     public static void main(String[] args) {
 
-        if(args.length == 0){
-            args = new String[5];
+        if (args.length == 0) {
+            args = new String[10];
             for (int i = 0; i < args.length; i++) {
-                args[i] = "8puzzle/puzzle0" + i + ".txt";
+                args[i] = "8puzzle/puzzle" + (i + 10) + ".txt";
             }
         }
-        
+
         // for each command-line argument
         for (String filename : args) {
 
