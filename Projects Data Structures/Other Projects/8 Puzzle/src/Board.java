@@ -1,6 +1,5 @@
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /*
@@ -14,18 +13,18 @@ import java.util.List;
  */
 public class Board {
 
-    private static final int[][] DIR = {{0, 1},
-    {1, 0},
-    {0, -1},
-    {-1, 0}};
-
     private final int[][] brd;
-    private final int moves;
     private int manhattan;
     private final int hamming;
-    private int zeroX, zeroY;
+    private int zeroX;
+    private int zeroY;
 
     public Board(int[][] blocks) {
+
+        if (blocks == null) {
+            throw new IllegalArgumentException();
+        }
+
         brd = new int[blocks.length][blocks[0].length];
 
         for (int i = 0; i < blocks.length; i++) {
@@ -38,25 +37,40 @@ public class Board {
             }
         }
 
-        moves = 0;
         manhattan = fullManhattan();
         hamming = fullHamming();
+    }
+
+//    private Board(char[][] blocks) {
+//        brd = new char[blocks.length][blocks[0].length];
+//
+//        for (int i = 0; i < blocks.length; i++) {
+//            for (int j = 0; j < blocks[0].length; j++) {
+//                brd[i][j] = blocks[i][j];
+//                if (brd[i][j] == 0) {
+//                    zeroX = i;
+//                    zeroY = j;
+//                }
+//            }
+//        }
+//
+//        moves = 0;
+//        manhattan = fullManhattan();
+//        hamming = fullHamming();
+//    }
+    private static int dir(int d, int p) {
+        return ((d & 0x0000_0001) != p) ? (((d & 0x0000_0002) == 0) ? 1 : -1) : 0;
     }
 
     private Board(Board parent) {
         brd = new int[parent.brd.length][parent.brd.length];
 
         for (int i = 0; i < parent.brd.length; i++) {
-            for (int j = 0; j < parent.brd.length; j++) {
-                brd[i][j] = parent.brd[i][j];
-                if (brd[i][j] == 0) {
-                    zeroX = i;
-                    zeroY = j;
-                }
-            }
+            System.arraycopy(parent.brd[i], 0, brd[i], 0, parent.brd.length);
         }
-        manhattan = hamming = -1;
-        moves = parent.moves + 1;
+
+        manhattan = -1;
+        hamming = fullHamming();
     }
 
     public int dimension() {
@@ -78,11 +92,11 @@ public class Board {
     }
 
     public int hamming() {
-        return hamming + moves;
+        return hamming;
     }
 
     public int manhattan() {
-        return manhattan + moves;
+        return manhattan;
     }
 
     private int fullManhattan() {
@@ -96,24 +110,24 @@ public class Board {
                 }
             }
         }
-        return sum + moves;
+        return sum;
     }
 
     private int moveManhattan(int x, int y, int num, int d) {
         int ind;
         if ((d & 0x0000_0001) == 0) {
-            ind = num % brd.length;
-            if (x > ind) {
-                return -DIR[d][1];
-            } else if (x < ind) {
-                return DIR[d][1];
-            }
-        } else {
             ind = num / brd.length;
             if (y > ind) {
-                return -DIR[d][0];
+                return -dir(d, 1);
             } else if (y < ind) {
-                return DIR[d][0];
+                return dir(d, 1);
+            }
+        } else {
+            ind = num % brd.length;
+            if (x > ind) {
+                return -dir(d, 0);
+            } else if (x < ind) {
+                return dir(d, 0);
             }
         }
         return 0;
@@ -145,12 +159,13 @@ public class Board {
             retB.brd[0][0] = retB.brd[1][0];
             retB.brd[1][0] = hold;
         }
+
         return retB;
     }
 
     @Override
     public boolean equals(Object y) {
-        if (!(y instanceof Board)) {
+        if (!(this.getClass().isInstance(y))) {
             return false;
         }
 
@@ -176,27 +191,25 @@ public class Board {
 //        hash = 67 * hash + Arrays.deepHashCode(this.brd);
 //        return hash;
 //    }
-
     public Iterable<Board> neighbors() {
         List<Board> ret = new ArrayList<Board>();
         int x, y;
         Board work;
 
         for (int i = 0; i < 4; i++) {
-            x = zeroX + DIR[i][0];
-            y = zeroY + DIR[i][1];
+            x = zeroX + dir(i, 0);
+            y = zeroY + dir(i, 1);
             if (x < 0 || brd.length <= x || y < 0 || brd.length <= y) {
                 continue;
             }
-            if (0 <= x && x < brd.length && 0 <= y && y <= brd.length) {
-                work = new Board(this);
-                work.brd[zeroX][zeroY] = work.brd[x][y];
-                work.brd[x][y] = 0;
-                work.zeroX = x;
-                work.zeroY = y;
-                work.manhattan = moveManhattan(zeroX, zeroY, brd[zeroX][zeroY], i) + manhattan;
-                ret.add(work);
-            }
+            work = new Board(this);
+            work.brd[zeroX][zeroY] = work.brd[x][y];
+            work.brd[x][y] = 0;
+            work.zeroX = x;
+            work.zeroY = y;
+            work.manhattan = moveManhattan(zeroX, zeroY, brd[zeroX][zeroY], i) + manhattan;
+            ret.add(work);
+
         }
 
         return ret;
@@ -221,12 +234,29 @@ public class Board {
         {7, 0, 8}};
 
         Board b = new Board(bbb);
-        System.out.println(b);
-        System.out.println(b.manhattan());
-        Iterable<Board> tests = b.neighbors();
+//        System.out.println(b);
+//        System.out.println(b.manhattan());
+        List<Board> bl = new ArrayList();
+        List<Board> bl2 = new ArrayList();
 
-        for (Board bt : tests) {
-            System.out.println(bt + "\n" + bt.manhattan());
+        bl.add(b);
+
+        for (int i = 0; i < 4; i++) {
+            System.out.println(dir(i, 0) + ", " + dir(i, 1));
+        }
+        
+        for (int i = 0; i < 3; i++) {
+            bl2.clear();
+            bl.forEach((b1) -> {
+                for (Board b2 : b1.neighbors()) {
+                    bl2.add(b2);
+                }
+            });
+            bl.addAll(bl2);
+        }
+
+        for (Board b1 : bl) {
+            System.out.println(b1 + " - " + b1.manhattan);
         }
     }
 }

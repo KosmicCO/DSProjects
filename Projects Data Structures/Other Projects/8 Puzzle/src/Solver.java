@@ -1,9 +1,8 @@
 
 import edu.princeton.cs.algs4.In;
+import edu.princeton.cs.algs4.LinkedStack;
 import edu.princeton.cs.algs4.MinPQ;
 import edu.princeton.cs.algs4.StdOut;
-import java.util.ArrayList;
-import java.util.List;
 
 
 /*
@@ -22,39 +21,30 @@ public class Solver {
     private final Iterable<Board> steps;
 
     public Solver(Board initial) {
-        MinPQ<Node> regQueue = new MinPQ<Node>();
-        MinPQ<Node> othQueue = new MinPQ<Node>();
+        
+        if(initial == null){
+            throw new IllegalArgumentException();
+        }
+        
+        MinPQ<Node> queue = new MinPQ<Node>();
 
         Node next = new Node(initial, null);
-        Node nTwn = new Node(initial.twin(), null);
+        queue.insert(new Node(initial.twin(), null));
 
-        while (!(next.brd.isGoal() || nTwn.brd.isGoal())) {
+        while (!next.brd.isGoal()) {
 
             for (Board neighbor : next.brd.neighbors()) {
-
-                if (next.parent != null && next.parent.brd.equals(neighbor)) {
-                    continue;
+                if (!(next.parent != null && next.parent.brd.equals(neighbor))) {
+                    queue.insert(new Node(neighbor, next));
                 }
-
-                regQueue.insert(new Node(neighbor, next));
             }
 
-            for (Board neighbor : nTwn.brd.neighbors()) {
-
-                if (next.parent != null && nTwn.parent.brd.equals(neighbor)) {
-                    continue;
-                }
-
-                othQueue.insert(new Node(neighbor, nTwn));
-            }
-
-            next = regQueue.delMin();
-            nTwn = othQueue.delMin();
+            next = queue.delMin();
         }
 
-        solvable = next.brd.isGoal();
-        steps = next.steps();
-        moves = next.length;
+        steps = next.steps(initial);
+        solvable = steps != null;
+        moves = solvable ? next.length : -1;
     }
 
     public boolean isSolvable() {
@@ -102,28 +92,35 @@ public class Solver {
         private int length;
 
         public Node(Board b, Node p) {
+
             brd = b;
             parent = p;
-            length = 0;
+            if (p == null) {
+                length = 0;
+            } else {
+                length = p.length + 1;
+            }
         }
 
         @Override
-        public int compareTo(Node o) {
-            return brd.manhattan() - o.brd.manhattan();
+        public int compareTo(Node other) {
+            return brd.manhattan() + length - other.brd.manhattan() - other.length;
         }
 
-        public Iterable<Board> steps() {
-            List<Board> step = new ArrayList<Board>();
+        public Iterable<Board> steps(Board initial) {
+            LinkedStack<Board> step = new LinkedStack<Board>();
             Node n = this;
-            length = -1;
 
             while (n != null) {
-                step.add(n.brd);
+                step.push(n.brd);
                 n = n.parent;
-                length++;
             }
 
-            return step;
+            if (step.peek().equals(initial)) {
+                return step;
+            }
+
+            return null;
         }
 
         @Override
