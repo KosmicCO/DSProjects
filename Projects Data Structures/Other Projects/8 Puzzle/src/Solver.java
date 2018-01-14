@@ -21,17 +21,17 @@ public class Solver {
     private final Iterable<Board> steps;
 
     public Solver(Board initial) {
-        
-        if(initial == null){
+
+        if (initial == null) {
             throw new IllegalArgumentException();
         }
-        
+
         MinPQ<Node> queue = new MinPQ<Node>();
 
         Node next = new Node(initial, null);
         queue.insert(new Node(initial.twin(), null));
 
-        while (!next.brd.isGoal()) {
+        while (!next.isGoal()) {
 
             for (Board neighbor : next.brd.neighbors()) {
                 if (!(next.parent != null && next.parent.brd.equals(neighbor))) {
@@ -90,6 +90,7 @@ public class Solver {
         private final Board brd;
         private final Node parent;
         private int length;
+        private int manhattan;
 
         public Node(Board b, Node p) {
 
@@ -100,11 +101,16 @@ public class Solver {
             } else {
                 length = p.length + 1;
             }
+            manhattan = brd.manhattan();
+        }
+        
+        public boolean isGoal(){
+            return manhattan == 0;
         }
 
         @Override
         public int compareTo(Node other) {
-            return brd.manhattan() + length - other.brd.manhattan() - other.length;
+            return manhattan + length - (other.manhattan + other.length);
         }
 
         public Iterable<Board> steps(Board initial) {

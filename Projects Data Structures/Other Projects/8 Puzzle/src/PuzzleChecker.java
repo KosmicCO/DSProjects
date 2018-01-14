@@ -33,7 +33,7 @@ public class PuzzleChecker {
     public static void main(String[] args) {
 
         if (args.length == 0) {
-            args = new String[10];
+            args = new String[30];
             for (int i = 0; i < args.length; i++) {
                 args[i] = "8puzzle/puzzle" + (i + 10) + ".txt";
             }
@@ -56,6 +56,9 @@ public class PuzzleChecker {
             Board initial = new Board(tiles);
             Solver solver = new Solver(initial);
             StdOut.println(filename + ": " + solver.moves());
+//            for (Board b : solver.solution()) {
+//                System.out.println(b + "\n" + b.manhattan());
+//            }
         }
     }
 }
