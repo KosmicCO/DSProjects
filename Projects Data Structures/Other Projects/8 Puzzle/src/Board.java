@@ -15,7 +15,7 @@ public class Board {
 
     private final int[][] brd;
     private int manhattan;
-    private final int hamming;
+    private int hamming;
     private int zeroX;
     private int zeroY;
 
@@ -38,7 +38,7 @@ public class Board {
         }
 
         manhattan = fullManhattan();
-        hamming = fullHamming();
+        hamming = -1;
     }
 
     private Board(Board parent) {
@@ -49,7 +49,7 @@ public class Board {
         }
 
         manhattan = -1;
-        hamming = fullHamming();
+        hamming = -1;
     }
 
     private static int dir(int d, int p) {
@@ -75,6 +75,9 @@ public class Board {
     }
 
     public int hamming() {
+        if (hamming == -1) {
+            hamming = fullHamming();
+        }
         return hamming;
     }
 

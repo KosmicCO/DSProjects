@@ -31,7 +31,7 @@ public class Solver {
         Node next = new Node(initial, null);
         queue.insert(new Node(initial.twin(), null));
 
-        while (!next.isGoal()) {
+        while (!next.brd.isGoal()) {
 
             for (Board neighbor : next.brd.neighbors()) {
                 if (!(next.parent != null && next.parent.brd.equals(neighbor))) {
@@ -90,7 +90,7 @@ public class Solver {
         private final Board brd;
         private final Node parent;
         private int length;
-        private int manhattan;
+        private final int manhattan;
 
         public Node(Board b, Node p) {
 
@@ -102,10 +102,6 @@ public class Solver {
                 length = p.length + 1;
             }
             manhattan = brd.manhattan();
-        }
-        
-        public boolean isGoal(){
-            return manhattan == 0;
         }
 
         @Override
