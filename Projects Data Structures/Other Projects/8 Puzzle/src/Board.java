@@ -102,17 +102,6 @@ public class Board {
     public boolean isGoal() {
 
         return manhattan == 0;
-
-//        int num = 1;
-//        for (int i = 0; i < brd.length; i++) {
-//            for (int j = 0; j < brd.length; j++) {
-//                if (brd[i][j] != num && !(i == brd.length - 1 && j == brd.length - 1)) {
-//                    return false;
-//                }
-//                num++;
-//            }
-//        }
-//        return true;
     }
 
     public Board twin() {
@@ -121,11 +110,11 @@ public class Board {
         if (retB.brd[0][0] == 0 || retB.brd[1][0] == 0) {
             retB.brd[0][1] = brd[1][1];
             retB.brd[1][1] = brd[0][1];
-            retB.manhattan = retB.fullManhattan(); // += moveManhattan(1, 1, brd[1][1], 2) + moveManhattan(1, 0, brd[0][1], 0);
+            retB.manhattan = retB.fullManhattan();
         } else {
             retB.brd[0][0] = brd[1][0];
             retB.brd[1][0] = brd[0][0];
-            retB.manhattan = retB.fullManhattan(); // += moveManhattan(0, 1, brd[1][1], 2) + moveManhattan(0, 0, brd[0][1], 0);
+            retB.manhattan = retB.fullManhattan();
         }
 
         return retB;
@@ -140,6 +129,10 @@ public class Board {
         Board other = (Board) y;
 
         if (brd.length != other.brd.length) {
+            return false;
+        }
+
+        if (manhattan != other.manhattan) {
             return false;
         }
 
@@ -175,12 +168,6 @@ public class Board {
 
         return manhattan + 1;
     }
-//    @Override
-//    public int hashCode() {
-//        int hash = 7;
-//        hash = 67 * hash + Arrays.deepHashCode(this.brd);
-//        return hash;
-//    }
 
     public Iterable<Board> neighbors() {
         List<Board> ret = new ArrayList<Board>();
@@ -229,30 +216,5 @@ public class Board {
         System.out.println(b.manhattan());
 
         System.out.println(b.twin());
-
-//        List<Board> bl = new ArrayList<Board>();
-//        List<Board> bl2 = new ArrayList<Board>();
-//
-//        bl.add(b);
-//        for (int i = 0; i < 4; i++) {
-//            System.out.println(dir(i, 0) + ", " + dir(i, 1));
-//        }
-//        System.out.println(b.moveManhattan(1, 2, 5, 0));
-//        System.out.println(b.moveManhattan(2, 1, 6, 1));
-//        System.out.println(b.moveManhattan(0, 1, 2, 2));
-//        System.out.println(b.moveManhattan(1, 0, 4, 3));
-//        for (int i = 0; i < 3; i++) {
-//            bl2.clear();
-//            bl.forEach((b1) -> {
-//                for (Board b2 : b1.neighbors()) {
-//                    bl2.add(b2);
-//                }
-//            });
-//            bl.addAll(bl2);
-//        }
-//
-//        for (Board b1 : bl) {
-//            System.out.println(b1 + " - " + b1.manhattan);
-//        }
     }
 }
