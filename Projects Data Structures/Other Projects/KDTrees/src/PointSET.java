@@ -45,8 +45,8 @@ public class PointSET {
     public Iterable<Point2D> range(RectHV rect) {           // all points that are inside the rectangle (or on the boundary) 
         List<Point2D> retPoints = new ArrayList<Point2D>();
         points.forEach(p -> {
-            if(rect.xmin() <= p.x() && p.x() <= rect.xmax()){
-                if(rect.ymin() <= p.y() && p.y() <= rect.ymax()){
+            if (rect.xmin() <= p.x() && p.x() <= rect.xmax()) {
+                if (rect.ymin() <= p.y() && p.y() <= rect.ymax()) {
                     retPoints.add(p);
                 }
             }
@@ -54,8 +54,20 @@ public class PointSET {
         return retPoints;
     }
 
-    public Point2D nearest(Point2D p) {           // a nearest neighbor in the set to point p; null if the set is empty 
-
+    public Point2D nearest(Point2D point) {           // a nearest neighbor in the set to point p; null if the set is empty 
+        if (points.isEmpty()) {
+            return null;
+        }
+        Point2D near = points.first();
+        double dist = Double.POSITIVE_INFINITY;
+        for (Point2D p : points) {
+            double candNear = p.distanceSquaredTo(point);
+            if (candNear < dist) {
+                near = p;
+                dist = candNear;
+            }
+        }
+        return near;
     }
 
     public static void main(String[] args) {                  // unit testing of the methods (optional) 
