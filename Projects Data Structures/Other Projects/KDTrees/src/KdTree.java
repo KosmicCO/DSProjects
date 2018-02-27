@@ -17,14 +17,14 @@ import java.util.List;
  */
 public class KdTree {
 
-    private Node root;
-    private int size;
-
-    public static final Color REED_RED = new Color(167, 14, 22);
+    private static final Color REED_RED = new Color(167, 14, 22);
     private static final RectHV CANVAS = new RectHV(0, 0, 1, 1);
     private static final double POINT_SIZE = 0.005;
-    private static final double PEN_RAD = 0.002;
+//    private static final double PEN_RAD = 0.002;
     private static final boolean START_ITOR = true;
+
+    private Node root;
+    private int size;
 
     public KdTree() {                               // construct an empty set of points 
         root = null;
@@ -40,29 +40,37 @@ public class KdTree {
     }
 
     public void insert(Point2D p) {           // add the point to the set (if it is not already in the set)
+        if (p == null) {
+            throw new IllegalArgumentException();
+        }
         if (root == null) {
             root = new Node(p);
         } else {
-            root.insertRecur(p, START_ITOR);
+            if (!root.insertRecur(p, START_ITOR)) {
+                return;
+            }
         }
         size++;
     }
 
-    public boolean contains(Point2D p) {           // does the set contain point p? 
-        if (root == null) {
-            return false;
+    public boolean contains(Point2D p) {           // does the set contain point p?
+        if (p == null) {
+            throw new IllegalArgumentException();
         }
-        return root.containsRecur(p, START_ITOR);
+        return root == null ? false : root.containsRecur(p, START_ITOR);
     }
 
     public void draw() {
-        StdDraw.setPenRadius(PEN_RAD);// draw all points to standard draw
+//        StdDraw.setPenRadius(PEN_RAD); // draw all points to standard draw
         if (root != null) {
             root.draw(CANVAS, START_ITOR);
         }
     }
 
     public Iterable<Point2D> range(RectHV rect) {           // all points that are inside the rectangle (or on the boundary) 
+        if(rect == null){
+            throw new IllegalArgumentException();
+        }
         List<Point2D> ret = new ArrayList<Point2D>();
         if (root == null) {
             return ret;
@@ -71,11 +79,14 @@ public class KdTree {
         return ret;
     }
 
-    public Point2D nearest(Point2D point) {           // a nearest neighbor in the set to point p; null if the set is empty 
-        if(root == null){
+    public Point2D nearest(Point2D p) {           // a nearest neighbor in the set to point p; null if the set is empty 
+        if(p == null){
+            throw new IllegalArgumentException();
+        }
+        if (root == null) {
             return null;
         }
-        return root.nearestRecur(point, START_ITOR).point;
+        return root.nearestRecur(p, START_ITOR).point;
     }
 
     public static void main(String[] args) {
@@ -102,22 +113,22 @@ public class KdTree {
             if (vert) {
                 if (less != null) {
                     less.draw(new RectHV(bounding.xmin(), bounding.ymin(), point.x(), bounding.ymax()), !vert);
-                    StdDraw.line(point.x(), point.y(), less.point.x(), less.point.y());
+//                    StdDraw.line(point.x(), point.y(), less.point.x(), less.point.y());
                 }
                 if (more != null) {
                     more.draw(new RectHV(point.x(), bounding.ymin(), bounding.xmax(), bounding.ymax()), !vert);
-                    StdDraw.line(point.x(), point.y(), more.point.x(), more.point.y());
+//                    StdDraw.line(point.x(), point.y(), more.point.x(), more.point.y());
                 }
                 StdDraw.setPenColor(REED_RED);
                 StdDraw.line(point.x(), bounding.ymin(), point.x(), bounding.ymax());
             } else {
                 if (less != null) {
                     less.draw(new RectHV(bounding.xmin(), bounding.ymin(), bounding.xmax(), point.y()), !vert);
-                    StdDraw.line(point.x(), point.y(), less.point.x(), less.point.y());
+//                    StdDraw.line(point.x(), point.y(), less.point.x(), less.point.y());
                 }
                 if (more != null) {
                     more.draw(new RectHV(bounding.xmin(), point.y(), bounding.xmax(), bounding.ymax()), !vert);
-                    StdDraw.line(point.x(), point.y(), more.point.x(), more.point.y());
+//                    StdDraw.line(point.x(), point.y(), more.point.x(), more.point.y());
                 }
                 StdDraw.setPenColor(StdDraw.BLUE);
                 StdDraw.line(bounding.xmin(), point.y(), bounding.xmax(), point.y());
@@ -127,7 +138,7 @@ public class KdTree {
         private PointDist nearestRecur(Point2D p, boolean vert) {
             double comp = vert ? p.x() - point.x() : p.y() - point.y();
             PointDist pd = new PointDist(point, p.distanceSquaredTo(point));
-            PointDist cand = null;
+            PointDist cand;
             if (comp > 0) {
                 if (more != null) {
                     cand = more.nearestRecur(p, !vert);
@@ -151,7 +162,7 @@ public class KdTree {
                         pd = cand;
                     }
                 }
-                
+
                 if (comp * comp < pd.distSqr) {
                     if (more != null) {
                         cand = more.nearestRecur(p, !vert);
@@ -236,8 +247,8 @@ public class KdTree {
 
     private class PointDist {
 
-        private Point2D point;
-        private double distSqr;
+        private final Point2D point;
+        private final double distSqr;
 
         public PointDist(Point2D p, double d) {
             point = p;

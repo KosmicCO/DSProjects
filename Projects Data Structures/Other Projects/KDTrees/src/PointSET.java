@@ -16,7 +16,7 @@ import java.util.TreeSet;
  */
 public class PointSET {
 
-    private TreeSet<Point2D> points;
+    private final TreeSet<Point2D> points;
 
     public PointSET() {                               // construct an empty set of points 
         points = new TreeSet<Point2D>();
@@ -39,7 +39,7 @@ public class PointSET {
     }
 
     public void draw() {                     // draw all points to standard draw
-        points.forEach(p -> draw());
+        points.forEach(p -> p.draw());
     }
 
     public Iterable<Point2D> range(RectHV rect) {           // all points that are inside the rectangle (or on the boundary) 
