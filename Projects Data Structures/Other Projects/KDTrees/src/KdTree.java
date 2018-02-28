@@ -139,7 +139,7 @@ public class KdTree {
             double comp = vert ? p.x() - point.x() : p.y() - point.y();
             PointDist pd = new PointDist(point, p.distanceSquaredTo(point));
             PointDist cand;
-            if (comp > 0) {
+            if (comp >= 0) {
                 if (more != null) {
                     cand = more.nearestRecur(p, !vert);
                     if (cand.distSqr < pd.distSqr) {
