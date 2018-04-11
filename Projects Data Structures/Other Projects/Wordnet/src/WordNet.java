@@ -1,3 +1,6 @@
+
+import edu.princeton.cs.algs4.In;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -12,7 +15,22 @@ public class WordNet {
 
     // constructor takes the name of the two input files
     public WordNet(String synsets, String hypernyms) {
-
+        
+        String[][] synForm;
+        String[][] hypForm;
+        {
+        In synIn = new In(synsets);
+        In hypIn = new In(hypernyms);
+        
+        String synAll = synIn.readAll();
+        String hypAll = hypIn.readAll();
+        
+        String[] synLines = synAll.split(",");
+        String[] hypLines = hypAll.split(",");
+        
+        synForm = new String[synLines.length][];
+        hypForm = new String[hypLines.length][];
+        }
     }
 
     // returns all WordNet nouns

@@ -15,7 +15,10 @@ import java.util.Iterator;
  */
 public class SAP {
 
+    private static final int INC_DIST = -1; // must be a negative number
+    
     private boolean[] vChecked, wChecked;
+    private boolean[] vVerts, wVerts;
     private Digraph graph;
     
     // constructor takes a digraph (not necessarily a DAG)
@@ -23,6 +26,8 @@ public class SAP {
         graph = copyDigraph(g);
         vChecked = new boolean[g.V()];
         wChecked = new boolean[g.V()];
+        vVerts = new boolean[g.V()];
+        wVerts = new boolean[g.V()];
     }
 
     // length of shortest ancestral path between v and w; -1 if no such path
@@ -39,9 +44,69 @@ public class SAP {
     public synchronized int length(Iterable<Integer> v, Iterable<Integer> w) {
         wipe(vChecked);
         wipe(wChecked);
+        wipe(vVerts);
+        wipe(wVerts);
         Queue<Integer> vQueue = new Queue();
         Queue<Integer> wQueue = new Queue();
+        for(int i : v){
+            vVerts[i] = true;
+            vChecked[i] = true;
+            vQueue.enqueue(i);
+        }
+        for(int i : w){
+            if(vVerts[i]){
+                return 0;
+            }
+            wVerts[i] = true;
+            wChecked[i] = true;
+            wQueue.enqueue(i);
+        }
+        vQueue.enqueue(INC_DIST);
+        wQueue.enqueue(INC_DIST);
+        int cur;
+        int vDist = 0;
+        int wDist = 0;
+        boolean vPrev = false;
+        boolean wPrev = false;
+        while(!(vQueue.isEmpty() && wQueue.isEmpty())){
+            if(!vQueue.isEmpty()){
+                cur = vQueue.dequeue();
+                if(cur == INC_DIST){
+                    ++vDist;
+                    if(!vPrev){
+                        vQueue.enqueue(INC_DIST);
+                    }
+                }else{
+                    vPrev = false;
+                    for(int i : graph.adj(cur)){
+                        if(vChecked[i]) continue;
+                        if(wVerts[i]) return vDist;
+                        vChecked[i] = true;
+                        vQueue.enqueue(i);
+                    }
+                }
+            }
+            
+            if(!wQueue.isEmpty()){
+                cur = wQueue.dequeue();
+                if(cur == INC_DIST){
+                    ++wDist;
+                    if(!wPrev){
+                        wQueue.enqueue(INC_DIST);
+                    }
+                }else{
+                    wPrev = false;
+                    for(int i : graph.adj(cur)){
+                        if(wChecked[i]) continue;
+                        if(vVerts[i]) return wDist;
+                        wChecked[i] = true;
+                        wQueue.enqueue(i);
+                    }
+                }
+            }
+        }
         
+        return -1;
     }
 
     // a common ancestor that participates in shortest ancestral path; -1 if no such path
