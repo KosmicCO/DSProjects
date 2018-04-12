@@ -1,35 +1,75 @@
 
+import edu.princeton.cs.algs4.Digraph;
 import edu.princeton.cs.algs4.In;
+import edu.princeton.cs.algs4.Topological;
+import java.util.HashMap;
+import java.util.Map;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 /**
  *
  * @author cbarnum18
  */
 public class WordNet {
 
+    private String[][] nouns;
+    private Map<String, Integer> nounToID;
+    private Digraph graph;
+
     // constructor takes the name of the two input files
     public WordNet(String synsets, String hypernyms) {
-        
-        String[][] synForm;
+
         String[][] hypForm;
-        {
+        nounToID = new HashMap();
+        
         In synIn = new In(synsets);
         In hypIn = new In(hypernyms);
+
+        String[] synLines = synIn.readAllLines();
+        String[] hypLines = hypIn.readAllLines();
+
+        nouns = new String[synLines.length][];
+        graph = new Digraph(synLines.length);
+
+        String[] w;
+        int ind;
+        for (int i = 0; i < synLines.length; ++i) {
+            w = synLines[i].split(",");
+            ind = Integer.parseInt(w[0]);
+            nouns[ind] = w[1].split(" ");
+            for (int j = 0; j < nouns[ind].length; ++j) {
+                nounToID.put(nouns[ind][j], ind);
+            }
+        }
+        for (String hypLine : hypLines) {
+            w = hypLine.split(",");
+            ind = Integer.parseInt(w[0]);
+            for (int i = 1; i < w.length; i++) {
+                graph.addEdge(ind, Integer.parseInt(w[i]));
+            }
+        }
         
-        String synAll = synIn.readAll();
-        String hypAll = hypIn.readAll();
+        Topological tp = new Topological(graph);
+        if(!tp.hasOrder()){
+            throw new IllegalArgumentException();
+        }
         
-        String[] synLines = synAll.split(",");
-        String[] hypLines = hypAll.split(",");
-        
-        synForm = new String[synLines.length][];
-        hypForm = new String[hypLines.length][];
+        boolean oneRoot = false;
+        for (int i = 0; i < graph.V(); ++i) {
+            if(graph.outdegree(i) == 0){
+                if(oneRoot){
+                    throw new IllegalArgumentException();
+                }else{
+                    oneRoot = true;
+                }
+            }
+        }
+        if(!oneRoot){
+            throw new IllegalArgumentException();
         }
     }
 
