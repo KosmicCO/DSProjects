@@ -17,8 +17,10 @@ public class SAP {
 
     private static final int INC_DIST = -1; // must be a negative number
     
-    private boolean[] vChecked, wChecked;
-    private boolean[] vVerts, wVerts;
+    private final boolean[] vChecked;
+    private final boolean[] wChecked;
+    private final boolean[] vVerts;
+    private final boolean[] wVerts;
     private Digraph graph;
     
     // constructor takes a digraph (not necessarily a DAG)
