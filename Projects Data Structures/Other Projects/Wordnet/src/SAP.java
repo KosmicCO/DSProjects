@@ -16,13 +16,13 @@ import java.util.Iterator;
 public class SAP {
 
     private static final int INC_DIST = -1; // must be a negative number
-    
+
     private final boolean[] vChecked;
     private final boolean[] wChecked;
     private final boolean[] vVerts;
     private final boolean[] wVerts;
-    private Digraph graph;
-    
+    private final Digraph graph;
+
     // constructor takes a digraph (not necessarily a DAG)
     public SAP(Digraph g) {
         graph = copyDigraph(g);
@@ -43,20 +43,26 @@ public class SAP {
     }
 
     // length of shortest ancestral path between any vertex in v and any vertex in w; -1 if no such path
-    public synchronized int length(Iterable<Integer> v, Iterable<Integer> w) {
+    public int length(Iterable<Integer> v, Iterable<Integer> w) {
         wipe(vChecked);
         wipe(wChecked);
         wipe(vVerts);
         wipe(wVerts);
-        Queue<Integer> vQueue = new Queue();
-        Queue<Integer> wQueue = new Queue();
-        for(int i : v){
+        Queue<Integer> vQueue = new Queue<>();
+        Queue<Integer> wQueue = new Queue<>();
+        for (int i : v) {
+            if (0 > i || graph.V() <= i) {
+                throw new IllegalArgumentException();
+            }
             vVerts[i] = true;
             vChecked[i] = true;
             vQueue.enqueue(i);
         }
-        for(int i : w){
-            if(vVerts[i]){
+        for (int i : w) {
+            if (0 > i || graph.V() <= i) {
+                throw new IllegalArgumentException();
+            }
+            if (vVerts[i]) {
                 return 0;
             }
             wVerts[i] = true;
@@ -70,76 +76,94 @@ public class SAP {
         int wDist = 0;
         boolean vPrev = false;
         boolean wPrev = false;
-        while(!(vQueue.isEmpty() && wQueue.isEmpty())){
-            if(!vQueue.isEmpty()){
+        while (!(vQueue.isEmpty() && wQueue.isEmpty())) {
+            if (!vQueue.isEmpty()) {
                 cur = vQueue.dequeue();
-                if(cur == INC_DIST){
+                if (cur == INC_DIST) {
                     ++vDist;
-                    if(!vPrev){
+                    if (!vPrev) {
                         vQueue.enqueue(INC_DIST);
                     }
-                }else{
+                } else {
                     vPrev = false;
-                    for(int i : graph.adj(cur)){
-                        if(vChecked[i]) continue;
-                        if(wVerts[i]) return vDist;
+                    for (int i : graph.adj(cur)) {
+                        if (vChecked[i]) {
+                            continue;
+                        }
+                        if (wVerts[i]) {
+                            return vDist;
+                        }
                         vChecked[i] = true;
                         vQueue.enqueue(i);
                     }
                 }
             }
-            
-            if(!wQueue.isEmpty()){
+
+            if (!wQueue.isEmpty()) {
                 cur = wQueue.dequeue();
-                if(cur == INC_DIST){
+                if (cur == INC_DIST) {
                     ++wDist;
-                    if(!wPrev){
+                    if (!wPrev) {
                         wQueue.enqueue(INC_DIST);
                     }
-                }else{
+                } else {
                     wPrev = false;
-                    for(int i : graph.adj(cur)){
-                        if(wChecked[i]) continue;
-                        if(vVerts[i]) return wDist;
+                    for (int i : graph.adj(cur)) {
+                        if (wChecked[i]) {
+                            continue;
+                        }
+                        if (vVerts[i]) {
+                            return wDist;
+                        }
                         wChecked[i] = true;
                         wQueue.enqueue(i);
                     }
                 }
             }
         }
-        
+
         return -1;
     }
 
     // a common ancestor that participates in shortest ancestral path; -1 if no such path
-    public synchronized int ancestor(Iterable<Integer> v, Iterable<Integer> w) {
+    public int ancestor(Iterable<Integer> v, Iterable<Integer> w) {
         wipe(vChecked);
         wipe(wChecked);
-        Queue<Integer> bfsQueue = new Queue();
-        for(int i : v){
+        Queue<Integer> bfsQueue = new Queue<>();
+        for (int i : v) {
             bfsQueue.enqueue(i);
             vChecked[i] = true;
         }
-        for(int i : w){
-            if(vChecked[i])return i;
+        for (int i : w) {
+            if (vChecked[i]) {
+                return i;
+            }
             bfsQueue.enqueue(-(i + 1));
             wChecked[i] = true;
         }
         int cur;
-        while(!bfsQueue.isEmpty()){
+        while (!bfsQueue.isEmpty()) {
             cur = bfsQueue.dequeue();
-            if(cur < 0){
+            if (cur < 0) {
                 cur = -(cur + 1);
-                for(int i : graph.adj(cur)){
-                    if(wChecked[i]) continue;
-                    if(vChecked[i]) return i;
+                for (int i : graph.adj(cur)) {
+                    if (wChecked[i]) {
+                        continue;
+                    }
+                    if (vChecked[i]) {
+                        return i;
+                    }
                     bfsQueue.enqueue(-(i + 1));
                     wChecked[i] = true;
                 }
-            }else{
-                for(int i : graph.adj(cur)){
-                    if(vChecked[i]) continue;
-                    if(wChecked[i]) return i;
+            } else {
+                for (int i : graph.adj(cur)) {
+                    if (vChecked[i]) {
+                        continue;
+                    }
+                    if (wChecked[i]) {
+                        return i;
+                    }
                     bfsQueue.enqueue(i);
                     vChecked[i] = true;
                 }
@@ -147,25 +171,26 @@ public class SAP {
         }
         return -1;
     }
-    
-    private static void wipe(boolean[] array){
+
+    private static void wipe(boolean[] array) {
         Arrays.fill(array, 0, 0, false);
     }
-    
-    private static Digraph copyDigraph(Digraph g){
+
+    private static Digraph copyDigraph(Digraph g) {
         Digraph copy = new Digraph(g.V());
         int len = g.V();
         for (int i = 0; i < len; ++i) {
-            for(int j : g.adj(i)) copy.addEdge(i, j);
+            for (int j : g.adj(i)) {
+                copy.addEdge(i, j);
+            }
         }
         return copy;
     }
 
     // do unit testing of this class
-    public static void main(String[] args) {
-
-    }
-
+//    public static void main(String[] args) {
+//
+//    }
     private class SingleIterator implements Iterator<Integer> {
 
         boolean checked;

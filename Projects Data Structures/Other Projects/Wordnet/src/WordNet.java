@@ -19,23 +19,23 @@ import java.util.Map;
  */
 public class WordNet {
 
-    private String[][] nouns;
-    private Map<String, Integer> nounToID;
-    private SAP sapFinder;
+    private final String[] nouns;
+    private final Map<String, Integer> nounToID;
+    private final SAP sapFinder;
 
     // constructor takes the name of the two input files
     public WordNet(String synsets, String hypernyms) {
 
         String[][] hypForm;
         nounToID = new HashMap<>();
-        
+
         In synIn = new In(synsets);
         In hypIn = new In(hypernyms);
 
         String[] synLines = synIn.readAllLines();
         String[] hypLines = hypIn.readAllLines();
 
-        nouns = new String[synLines.length][];
+        nouns = new String[synLines.length];
         Digraph graph = new Digraph(synLines.length);
 
         String[] w;
@@ -43,10 +43,7 @@ public class WordNet {
         for (int i = 0; i < synLines.length; ++i) {
             w = synLines[i].split(",");
             ind = Integer.parseInt(w[0]);
-            nouns[ind] = w[1].split(" ");
-            for (int j = 0; j < nouns[ind].length; ++j) {
-                nounToID.put(nouns[ind][j], ind);
-            }
+            nouns[ind] = w[1];
         }
         for (String hypLine : hypLines) {
             w = hypLine.split(",");
@@ -55,23 +52,23 @@ public class WordNet {
                 graph.addEdge(ind, Integer.parseInt(w[i]));
             }
         }
-        
+
         Topological tp = new Topological(graph);
-        if(!tp.hasOrder()){
+        if (!tp.hasOrder()) {
             throw new IllegalArgumentException();
         }
-        
+
         boolean oneRoot = false;
         for (int i = 0; i < graph.V(); ++i) {
-            if(graph.outdegree(i) == 0){
-                if(oneRoot){
+            if (graph.outdegree(i) == 0) {
+                if (oneRoot) {
                     throw new IllegalArgumentException();
-                }else{
+                } else {
                     oneRoot = true;
                 }
             }
         }
-        if(!oneRoot){
+        if (!oneRoot) {
             throw new IllegalArgumentException();
         }
         sapFinder = new SAP(graph);
@@ -79,32 +76,49 @@ public class WordNet {
 
     // returns all WordNet nouns
     public Iterable<String> nouns() {
-        List ret = new ArrayList();
-        for(String[] simNouns : nouns){
-            ret.addAll(Arrays.asList(simNouns));
+        List<String> ret = new ArrayList();
+        for (String simNouns : nouns) {
+            ret.addAll(Arrays.asList(simNouns.split(" ")));
         }
         return ret;
     }
 
     // is the word a WordNet noun?
     public boolean isNoun(String word) {
+        if(word == null) throw new IllegalArgumentException();
         return nounToID.containsKey(word);
     }
 
     // distance between nounA and nounB (defined below)
     public int distance(String nounA, String nounB) {
-        if(nounA == null || nounB == null) throw new IllegalArgumentException();
-        return sapFinder.length(nounToID.get(nounA), nounToID.get(nounB));
+        if (nounA == null || nounB == null) {
+            throw new IllegalArgumentException();
+        }
+        Integer nA = nounToID.get(nounA);
+        Integer nB = nounToID.get(nounB);
+        if(nA == null || nB == null){
+            throw new IllegalArgumentException();
+        }
+        return sapFinder.length(nA, nB);
     }
 
     // a synset (second field of synsets.txt) that is the common ancestor of nounA and nounB
     // in a shortest ancestral path (defined below)
     public String sap(String nounA, String nounB) {
-        return nouns[sapFinder.ancestor(nounToID.get(nounA), nounToID.get(nounB))][0];
+        if (nounA == null || nounB == null) {
+            throw new IllegalArgumentException();
+        }
+        Integer nA = nounToID.get(nounA);
+        Integer nB = nounToID.get(nounB);
+        if(nA == null || nB == null){
+            throw new IllegalArgumentException();
+        }
+        int ret = sapFinder.ancestor(nA, nB);
+        return ret == -1 ? null : nouns[ret];
     }
 
     // do unit testing of this class
     public static void main(String[] args) {
-
+        
     }
 }

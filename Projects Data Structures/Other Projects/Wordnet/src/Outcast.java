@@ -9,30 +9,30 @@
  * @author cbarnum18
  */
 public class Outcast {
-    
-    private WordNet wn;
-    
-    public Outcast(WordNet wn){
+
+    private final WordNet wn;
+
+    public Outcast(WordNet wn) {
         this.wn = wn;
     }
-    
-    public String outcast(String[] nouns){
+
+    public String outcast(String[] nouns) {
         String oc = null;
         int maxD = 0;
-        for(String n : nouns){
+        for (String n : nouns) {
             int d = 0;
-            for(String m : nouns){
+            for (String m : nouns) {
                 int nd = wn.distance(n, m);
-                if(d < nd){
+                if (d < nd) {
                     d = nd;
                 }
             }
-            if(maxD < d){
+            if (maxD < d) {
                 oc = n;
                 maxD = d;
             }
         }
-        
+
         return oc;
     }
 }
