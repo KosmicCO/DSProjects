@@ -29,11 +29,8 @@ public class WordNet {
         String[][] hypForm;
         nounToID = new HashMap<>();
 
-        In synIn = new In(synsets);
-        In hypIn = new In(hypernyms);
-
-        String[] synLines = synIn.readAllLines();
-        String[] hypLines = hypIn.readAllLines();
+        String[] synLines = (new In(synsets)).readAllLines();
+        String[] hypLines = (new In(hypernyms)).readAllLines();
 
         nouns = new String[synLines.length];
         Digraph graph = new Digraph(synLines.length);
@@ -44,6 +41,7 @@ public class WordNet {
             w = synLines[i].split(",");
             ind = Integer.parseInt(w[0]);
             nouns[ind] = w[1];
+            nounToID.put(w[1], ind);
         }
         for (String hypLine : hypLines) {
             w = hypLine.split(",");
@@ -85,7 +83,9 @@ public class WordNet {
 
     // is the word a WordNet noun?
     public boolean isNoun(String word) {
-        if(word == null) throw new IllegalArgumentException();
+        if (word == null) {
+            throw new IllegalArgumentException();
+        }
         return nounToID.containsKey(word);
     }
 
@@ -96,7 +96,7 @@ public class WordNet {
         }
         Integer nA = nounToID.get(nounA);
         Integer nB = nounToID.get(nounB);
-        if(nA == null || nB == null){
+        if (nA == null || nB == null) {
             throw new IllegalArgumentException();
         }
         return sapFinder.length(nA, nB);
@@ -110,7 +110,7 @@ public class WordNet {
         }
         Integer nA = nounToID.get(nounA);
         Integer nB = nounToID.get(nounB);
-        if(nA == null || nB == null){
+        if (nA == null || nB == null) {
             throw new IllegalArgumentException();
         }
         int ret = sapFinder.ancestor(nA, nB);
@@ -119,6 +119,8 @@ public class WordNet {
 
     // do unit testing of this class
     public static void main(String[] args) {
-        
+        WordNet wn = new WordNet("wordnet/synsets11.txt", "wordnet/hypernyms11ManyPathsOneAncestor.txt");
+        System.out.println("--");
+        System.out.println(wn.distance("b", "d"));
     }
 }

@@ -1,4 +1,5 @@
 
+import edu.princeton.cs.algs4.BreadthFirstDirectedPaths;
 import edu.princeton.cs.algs4.Digraph;
 import edu.princeton.cs.algs4.Queue;
 import java.util.Arrays;
@@ -44,89 +45,28 @@ public class SAP {
 
     // length of shortest ancestral path between any vertex in v and any vertex in w; -1 if no such path
     public int length(Iterable<Integer> v, Iterable<Integer> w) {
-        wipe(vChecked);
-        wipe(wChecked);
-        wipe(vVerts);
-        wipe(wVerts);
-        Queue<Integer> vQueue = new Queue<>();
-        Queue<Integer> wQueue = new Queue<>();
-        for (int i : v) {
-            if (0 > i || graph.V() <= i) {
-                throw new IllegalArgumentException();
-            }
-            vVerts[i] = true;
-            vChecked[i] = true;
-            vQueue.enqueue(i);
-        }
-        for (int i : w) {
-            if (0 > i || graph.V() <= i) {
-                throw new IllegalArgumentException();
-            }
-            if (vVerts[i]) {
-                return 0;
-            }
-            wVerts[i] = true;
-            wChecked[i] = true;
-            wQueue.enqueue(i);
-        }
-        vQueue.enqueue(INC_DIST);
-        wQueue.enqueue(INC_DIST);
-        int cur;
-        int vDist = 0;
-        int wDist = 0;
-        boolean vPrev = false;
-        boolean wPrev = false;
-        while (!(vQueue.isEmpty() && wQueue.isEmpty())) {
-            if (!vQueue.isEmpty()) {
-                cur = vQueue.dequeue();
-                if (cur == INC_DIST) {
-                    ++vDist;
-                    if (!vPrev) {
-                        vQueue.enqueue(INC_DIST);
-                    }
-                } else {
-                    vPrev = false;
-                    for (int i : graph.adj(cur)) {
-                        if (vChecked[i]) {
-                            continue;
-                        }
-                        if (wVerts[i]) {
-                            return vDist;
-                        }
-                        vChecked[i] = true;
-                        vQueue.enqueue(i);
-                    }
-                }
-            }
 
-            if (!wQueue.isEmpty()) {
-                cur = wQueue.dequeue();
-                if (cur == INC_DIST) {
-                    ++wDist;
-                    if (!wPrev) {
-                        wQueue.enqueue(INC_DIST);
-                    }
-                } else {
-                    wPrev = false;
-                    for (int i : graph.adj(cur)) {
-                        if (wChecked[i]) {
-                            continue;
-                        }
-                        if (vVerts[i]) {
-                            return wDist;
-                        }
-                        wChecked[i] = true;
-                        wQueue.enqueue(i);
-                    }
-                }
-            }
+        int anc = ancestor(v, w);
+
+        BreadthFirstDirectedPaths bfdpV = new BreadthFirstDirectedPaths(graph, v);
+        BreadthFirstDirectedPaths bfdpW = new BreadthFirstDirectedPaths(graph, w);
+
+        if (anc == -1) {
+            return -1;
         }
 
-        return -1;
+        int shortest = Integer.MAX_VALUE;
+
+        int vs = bfdpV.distTo(anc);
+        int ws = bfdpW.distTo(anc);
+        return vs + ws;
     }
 
     // a common ancestor that participates in shortest ancestral path; -1 if no such path
     public int ancestor(Iterable<Integer> v, Iterable<Integer> w) {
+        if (v == null || w == null) {
+            throw new IllegalArgumentException();
+        }
         wipe(vChecked);
         wipe(wChecked);
         Queue<Integer> bfsQueue = new Queue<>();
@@ -188,9 +128,26 @@ public class SAP {
     }
 
     // do unit testing of this class
-//    public static void main(String[] args) {
-//
-//    }
+    public static void main(String[] args) {
+        Digraph ff = new Digraph(10);
+        ff.addEdge(4, 0);
+        ff.addEdge(2, 0);
+        ff.addEdge(6, 0);
+        ff.addEdge(5, 0);
+        ff.addEdge(5, 1);
+        ff.addEdge(9, 1);
+        ff.addEdge(4, 2);
+        ff.addEdge(3, 2);
+        ff.addEdge(6, 2);
+        ff.addEdge(5, 3);
+        ff.addEdge(9, 6);
+        ff.addEdge(9, 8);
+
+        System.out.println("K");
+        SAP ss = new SAP(ff);
+        System.out.println(ss.length(4, 9));
+    }
+
     private class SingleIterator implements Iterator<Integer> {
 
         boolean checked;

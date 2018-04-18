@@ -18,18 +18,26 @@ public class Outcast {
 
     public String outcast(String[] nouns) {
         String oc = null;
-        int maxD = 0;
-        for (String n : nouns) {
-            int d = 0;
-            for (String m : nouns) {
-                int nd = wn.distance(n, m);
-                if (d < nd) {
-                    d = nd;
+        int minD = Integer.MAX_VALUE;
+        boolean skip = false;
+        for (int i = 0; i < nouns.length; i++) {
+            int nmd = Integer.MAX_VALUE;
+            for (int j = i + 1; j < nouns.length; j++) {
+                skip = false;
+                int dist = wn.distance(nouns[i], nouns[j]);
+                if (minD > dist) {
+                    skip = true;
+                    continue;
+                }
+                if (nmd > dist) {
+                    nmd = dist;
                 }
             }
-            if (maxD < d) {
-                oc = n;
-                maxD = d;
+            if (!skip) {
+                if (minD > nmd) {
+                    minD = nmd;
+                    oc = nouns[i];
+                }
             }
         }
 
