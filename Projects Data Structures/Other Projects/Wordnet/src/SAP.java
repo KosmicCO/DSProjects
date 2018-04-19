@@ -1,9 +1,7 @@
 
-import edu.princeton.cs.algs4.BreadthFirstDirectedPaths;
 import edu.princeton.cs.algs4.Digraph;
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.Queue;
-import edu.princeton.cs.algs4.StdIn;
 import edu.princeton.cs.algs4.StdOut;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -21,19 +19,11 @@ public class SAP {
 
     private static final int INC_DIST = -1; // must be a negative number
 
-    private final boolean[] vChecked;
-    private final boolean[] wChecked;
-    private final int[] vDist;
-    private final int[] wDist;
     private final Digraph graph;
 
     // constructor takes a digraph (not necessarily a DAG)
     public SAP(Digraph g) {
         graph = new Digraph(g);
-        vChecked = new boolean[g.V()];
-        wChecked = new boolean[g.V()];
-        vDist = new int[g.V()];
-        wDist = new int[g.V()];
     }
 
     // length of shortest ancestral path between v and w; -1 if no such path
@@ -49,18 +39,54 @@ public class SAP {
     // length of shortest ancestral path between any vertex in v and any vertex in w; -1 if no such path
     public int length(Iterable<Integer> v, Iterable<Integer> w) {
 
-        int anc = ancestor(v, w);
-
-        BreadthFirstDirectedPaths bfdpV = new BreadthFirstDirectedPaths(graph, v);
-        BreadthFirstDirectedPaths bfdpW = new BreadthFirstDirectedPaths(graph, w);
-
-        if (anc == -1) {
-            return -1;
+        if (v == null || w == null) {
+            throw new IllegalArgumentException();
         }
 
-        int vs = bfdpV.distTo(anc);
-        int ws = bfdpW.distTo(anc);
-        return vs + ws;
+        int[] vD = dists(v);
+        int[] wD = dists(w);
+
+        boolean ret = false;
+        int len = Integer.MAX_VALUE;
+
+        for (int i = 0; i < vD.length; i++) {
+            int pl;
+            if (vD[i] != -1 && wD[i] != -1) {
+                pl = vD[i] + wD[i];
+                if (pl < len) {
+                    ret = true;
+                    len = pl;
+                }
+            }
+        }
+
+        return ret ? len : -1;
+    }
+
+    private int[] dists(Iterable<Integer> v) {
+        int[] dists = new int[graph.V()];
+        wipeN(dists);
+        Queue<Integer> q = new Queue<>();
+
+        for (int i : v) {
+            if (i < 0 || i >= graph.V()) {
+                throw new IllegalArgumentException();
+            }
+            dists[i] = 0;
+            q.enqueue(i);
+        }
+
+        int cur;
+        while (!q.isEmpty()) {
+            cur = q.dequeue();
+            for (int i : graph.adj(cur)) {
+                if (dists[i] == -1) {
+                    dists[i] = dists[cur] + 1;
+                    q.enqueue(i);
+                }
+            }
+        }
+        return dists;
     }
 
     // a common ancestor that participates in shortest ancestral path; -1 if no such path
@@ -69,92 +95,40 @@ public class SAP {
             throw new IllegalArgumentException();
         }
 
-        wipe(vChecked);
-        wipe(wChecked);
-        wipe(vDist);
-        wipe(wDist);
+        int[] vD = dists(v);
+        int[] wD = dists(w);
 
-        Queue<Integer> bfsQueue = new Queue<>();
-        for (int i : v) {
-            bfsQueue.enqueue(i);
-            vChecked[i] = true;
-            vDist[i] = 0;
-        }
+        int vert = -1;
+        int len = Integer.MAX_VALUE;
 
-        for (int i : w) {
-            if (vChecked[i]) {
-                return i;
-            }
-            bfsQueue.enqueue(-(i + 1));
-            wChecked[i] = true;
-            wDist[i] = 0;
-        }
-
-        int sa = -1;
-        int dist = Integer.MAX_VALUE;
-        int cur;
-
-        while (!bfsQueue.isEmpty()) {
-            cur = bfsQueue.dequeue();
-            if (cur < 0) {
-                cur = -(cur + 1);
-                for (int i : graph.adj(cur)) {
-                    if (wChecked[i]) {
-                        continue;
-                    }
-                    wChecked[i] = true;
-                    wDist[i] = wDist[cur] + 1;
-                    if (vChecked[i]) {
-                        if (dist > vDist[i] + wDist[i]) {
-                            dist = vDist[i] + wDist[i];
-                            sa = i;
-                        }
-                    }
-                    bfsQueue.enqueue(-(i + 1));
-                }
-            } else {
-                for (int i : graph.adj(cur)) {
-                    if (vChecked[i]) {
-                        continue;
-                    }
-                    vChecked[i] = true;
-                    vDist[i] = vDist[cur] + 1;
-                    if (wChecked[i]) {
-                        if (dist > vDist[i] + wDist[i]) {
-                            dist = vDist[i] + wDist[i];
-                            sa = i;
-                        }
-                    }
-                    bfsQueue.enqueue(i);
+        for (int i = 0; i < vD.length; i++) {
+            int pl;
+            if (vD[i] != -1 && wD[i] != -1) {
+                pl = vD[i] + wD[i];
+                if (pl < len) {
+                    vert = i;
+                    len = pl;
                 }
             }
-
         }
-        return sa;
 
+        return vert;
     }
 
-    private static void wipe(boolean[] array) {
-        Arrays.fill(array, 0, 0, false);
-    }
-
-    private static void wipe(int[] array) {
-        Arrays.fill(array, 0, 0, 0);
+    private static void wipeN(int[] array) {
+        Arrays.fill(array, 0, array.length, -1);
     }
 
     // do unit testing of this class
     public static void main(String[] args) {
-        In in = new In("wordnet/digraph3.txt");
+        In in = new In("wordnet/digraph1.txt");
         Digraph G = new Digraph(in);
         SAP sap = new SAP(G);
-        while (!StdIn.isEmpty()) {
-            System.out.println("f");
-            int v = StdIn.readInt();
-            int w = StdIn.readInt();
-            int length = sap.length(v, w);
-            int ancestor = sap.ancestor(v, w);
-            StdOut.printf("length = %d, ancestor = %d\n", length, ancestor);
-        }
+        int v = 3;
+        int w = 8;
+        int length = sap.length(v, w);
+        int ancestor = sap.ancestor(v, w);
+        StdOut.printf("length = %d, ancestor = %d\n", length, ancestor);
     }
 
     private class SingleIterator implements Iterator<Integer> {
