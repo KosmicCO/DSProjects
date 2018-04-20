@@ -41,7 +41,10 @@ public class WordNet {
             w = synLines[i].split(",");
             ind = Integer.parseInt(w[0]);
             nouns[ind] = w[1];
-            nounToID.put(w[1], ind);
+            String[] fromW = w[1].split(" ");
+            for (String word : fromW) {
+                nounToID.put(word, ind);
+            }
         }
         for (String hypLine : hypLines) {
             w = hypLine.split(",");
@@ -74,7 +77,7 @@ public class WordNet {
 
     // returns all WordNet nouns
     public Iterable<String> nouns() {
-        List<String> ret = new ArrayList();
+        List<String> ret = new ArrayList<>();
         for (String simNouns : nouns) {
             ret.addAll(Arrays.asList(simNouns.split(" ")));
         }
@@ -91,36 +94,26 @@ public class WordNet {
 
     // distance between nounA and nounB (defined below)
     public int distance(String nounA, String nounB) {
-        if (nounA == null || nounB == null) {
+        if (nounA == null || nounB == null || !(isNoun(nounA) && isNoun(nounB))) {
             throw new IllegalArgumentException();
         }
-        Integer nA = nounToID.get(nounA);
-        Integer nB = nounToID.get(nounB);
-        if (nA == null || nB == null) {
-            throw new IllegalArgumentException();
-        }
-        return sapFinder.length(nA, nB);
+        return sapFinder.length(nounToID.get(nounA), nounToID.get(nounB));
     }
 
     // a synset (second field of synsets.txt) that is the common ancestor of nounA and nounB
     // in a shortest ancestral path (defined below)
     public String sap(String nounA, String nounB) {
-        if (nounA == null || nounB == null) {
+        if (nounA == null || nounB == null || !(isNoun(nounA) && isNoun(nounB))) {
             throw new IllegalArgumentException();
         }
-        Integer nA = nounToID.get(nounA);
-        Integer nB = nounToID.get(nounB);
-        if (nA == null || nB == null) {
-            throw new IllegalArgumentException();
-        }
-        int ret = sapFinder.ancestor(nA, nB);
+        int ret = sapFinder.ancestor(nounToID.get(nounA), nounToID.get(nounB));
         return ret == -1 ? null : nouns[ret];
     }
 
     // do unit testing of this class
     public static void main(String[] args) {
-        WordNet wn = new WordNet("wordnet/synsets11.txt", "wordnet/hypernyms11ManyPathsOneAncestor.txt");
+        WordNet wn = new WordNet("wordnet/synsets50000-subgraph.txt", "wordnet/hypernyms50000-subgraph.txt");
         System.out.println("--");
-        System.out.println(wn.distance("b", "d"));
+        System.out.println(wn.distance("Madrid", "license"));
     }
 }

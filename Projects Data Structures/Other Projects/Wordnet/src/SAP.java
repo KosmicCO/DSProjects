@@ -5,6 +5,7 @@ import edu.princeton.cs.algs4.Queue;
 import edu.princeton.cs.algs4.StdOut;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -17,28 +18,27 @@ import java.util.Iterator;
  */
 public class SAP {
 
-    private static final int INC_DIST = -1; // must be a negative number
-
     private final Digraph graph;
+    private final Calculated cc;
 
     // constructor takes a digraph (not necessarily a DAG)
     public SAP(Digraph g) {
         graph = new Digraph(g);
+        cc = new Calculated();
     }
 
     // length of shortest ancestral path between v and w; -1 if no such path
     public int length(int v, int w) {
-        return length(() -> new SingleIterator(v), () -> new SingleIterator(w));
+        return cc.getLength(v, w, this);
     }
 
     // a common ancestor of v and w that participates in a shortest ancestral path; -1 if no such path
     public int ancestor(int v, int w) {
-        return ancestor(() -> new SingleIterator(v), () -> new SingleIterator(w));
+        return cc.getAncestor(v, w, this);
     }
 
     // length of shortest ancestral path between any vertex in v and any vertex in w; -1 if no such path
     public int length(Iterable<Integer> v, Iterable<Integer> w) {
-
         if (v == null || w == null) {
             throw new IllegalArgumentException();
         }
@@ -124,11 +124,76 @@ public class SAP {
         In in = new In("wordnet/digraph1.txt");
         Digraph G = new Digraph(in);
         SAP sap = new SAP(G);
-        int v = 3;
-        int w = 8;
+        Integer[] va = {-1, 1, 2, 3};
+        Integer[] wa = {4, 5, 6};
+        List<Integer> v = Arrays.asList(va);
+        List<Integer> w = Arrays.asList(wa);
         int length = sap.length(v, w);
         int ancestor = sap.ancestor(v, w);
         StdOut.printf("length = %d, ancestor = %d\n", length, ancestor);
+    }
+
+    private class Calculated {
+
+        private int v;
+        private int w;
+        private int anc;
+        private int len;
+
+        public Calculated() {
+            v = -1;
+            w = -1;
+            anc = -1;
+            len = -1;
+        }
+
+        public int getLength(int v, int w, SAP sap) {
+            if (this.v == v && this.w == w) {
+                return len;
+            }
+            this.v = v;
+            this.w = w;
+            recalc();
+            return len;
+        }
+
+        public int getAncestor(int v, int w, SAP sap) {
+            if (this.v == v && this.w == w) {
+                return anc;
+            }
+            this.v = v;
+            this.w = w;
+            recalc();
+            return anc;
+        }
+
+        private void recalc() {
+
+            int[] vD = dists(() -> new SingleIterator(v));
+            int[] wD = dists(() -> new SingleIterator(w));
+
+            int vert = -1;
+            int dist = Integer.MAX_VALUE;
+
+            for (int i = 0; i < vD.length; i++) {
+                int pl;
+                if (vD[i] != -1 && wD[i] != -1) {
+                    pl = vD[i] + wD[i];
+                    if (pl < dist) {
+                        vert = i;
+                        dist = pl;
+                    }
+                }
+            }
+
+            if (vert == -1) {
+                anc = -1;
+                len = -1;
+            } else {
+                anc = vert;
+                len = dist;
+            }
+        }
     }
 
     private class SingleIterator implements Iterator<Integer> {

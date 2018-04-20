@@ -17,30 +17,35 @@ public class Outcast {
     }
 
     public String outcast(String[] nouns) {
-        String oc = null;
-        int minD = Integer.MAX_VALUE;
-        boolean skip = false;
-        for (int i = 0; i < nouns.length; i++) {
-            int nmd = Integer.MAX_VALUE;
-            for (int j = i + 1; j < nouns.length; j++) {
-                skip = false;
-                int dist = wn.distance(nouns[i], nouns[j]);
-                if (minD > dist) {
-                    skip = true;
-                    continue;
-                }
-                if (nmd > dist) {
-                    nmd = dist;
-                }
-            }
-            if (!skip) {
-                if (minD > nmd) {
-                    minD = nmd;
-                    oc = nouns[i];
-                }
+        if (nouns == null) {
+            throw new IllegalArgumentException();
+        }
+        for (String n : nouns) {
+            if (!wn.isNoun(n)) {
+                throw new IllegalArgumentException();
             }
         }
+        int[] dists = new int[nouns.length];
+        for (int i = 0; i < nouns.length; i++) {
+            for (int j = i + 1; j < nouns.length; j++) {
+                dists[i] += wn.distance(nouns[i], nouns[j]);
+                dists[j] += wn.distance(nouns[i], nouns[j]);
+            }
+        }
+        String out = null;
+        int greatest = 0;
+        for (int i = 0; i < nouns.length; i++) {
+            if (dists[i] > greatest) {
+                greatest = dists[i];
+                out = nouns[i];
+            }
+        }
+        return out;
+    }
 
-        return oc;
+    public static void main(String[] args) {
+        WordNet wn = new WordNet("wordnet/synsets.txt", "wordnet/hypernyms.txt");
+        Outcast out = new Outcast(wn);
+        System.out.println(out.outcast("earth fire water heart".split(" ")));
     }
 }
