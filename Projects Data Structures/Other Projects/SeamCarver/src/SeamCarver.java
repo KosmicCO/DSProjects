@@ -1,7 +1,9 @@
 
-import edu.princeton.cs.algs4.MinPQ;
+import edu.princeton.cs.algs4.IndexMinPQ;
 import edu.princeton.cs.algs4.Picture;
+import edu.princeton.cs.algs4.Queue;
 import java.awt.Color;
+import java.util.Arrays;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -76,7 +78,50 @@ public class SeamCarver {
     }
 
     public int[] findHorizontalSeam() { // sequence of indices for horizontal seam
-        MinPQ q = new MinPQ();
+        int[] top = new int[pic.width()];
+        double[] topEn = new double[pic.width()];
+        IndexMinPQ<Double> sort = new IndexMinPQ<>(top.length);
+        for (int i = 0; i < top.length; i++) {
+            topEn[i] = energy(i, 0);
+            sort.insert(i, topEn[i]);
+        }
+        for (int i = 0; i < top.length; i++) {
+            top[i] = sort.delMin();
+        }
+        
+        double[][] distTo = new double[pic.width()][pic.height() - 1];
+        for (double[] suba : distTo) {
+            Arrays.fill(suba, -1);
+        }
+        Queue<Pos> q = new Queue();
+        q.enqueue(new Pos(top[0], 0));
+        int ind = 1;
+        
+        Pos cur;
+        double topNextEn = top[1];
+        int endInd = -1;
+        while(!q.isEmpty()){
+            cur = q.dequeue();
+            double energy = Double.POSITIVE_INFINITY;
+            
+            if(cur.y == distTo[0].length - 1){ // If made it to the bottom
+                double curEn;
+                for (int i = -1; i <= 1; i++) {
+                    if(!(cur.x + i < 0 || cur.x + i >= distTo.length)){
+                        curEn = energy(cur.x + i, cur.y + 1);
+                        if(curEn < energy){
+                            endInd = cur.x + i;
+                            energy = curEn;
+                        }
+                    }
+                }
+                break;
+            }
+            
+            for (int i = -1; i <= 1; i++) { // In general
+                
+            }
+        }
     }
 
     public int[] findVerticalSeam() { // sequence of indices for vertical seam
@@ -109,5 +154,16 @@ public class SeamCarver {
             }
         }
         pic = np;
+    }
+    
+    private class Pos{
+        
+        private final int x;
+        private final int y;
+        
+        public Pos(int x, int y){
+            this.x = x;
+            this.y = y;
+        }
     }
 }
