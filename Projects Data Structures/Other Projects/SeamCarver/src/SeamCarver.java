@@ -1,5 +1,6 @@
 
 import edu.princeton.cs.algs4.IndexMinPQ;
+import edu.princeton.cs.algs4.MinPQ;
 import edu.princeton.cs.algs4.Picture;
 import edu.princeton.cs.algs4.Queue;
 import java.awt.Color;
@@ -76,7 +77,21 @@ public class SeamCarver {
         }
         return sum;
     }
+    
+    public int[] findHorizontalSeam() {
+        int[] top = new int[pic.width()];
+        double[] topEn = new double[pic.width()];
+        IndexMinPQ<Double> sort = new IndexMinPQ<>(top.length);
+        for (int i = 0; i < top.length; i++) {
+            topEn[i] = energy(i, 0);
+            sort.insert(i, topEn[i]);
+        }
+        for (int i = 0; i < top.length; i++) {
+            top[i] = sort.delMin();
+        }
+    }
 
+    /*
     public int[] findHorizontalSeam() { // sequence of indices for horizontal seam
         int[] top = new int[pic.width()];
         double[] topEn = new double[pic.width()];
@@ -89,40 +104,49 @@ public class SeamCarver {
             top[i] = sort.delMin();
         }
         
-        double[][] distTo = new double[pic.width()][pic.height() - 1];
+        double[][] distTo = new double[pic.width()][pic.height()];
+        int[][] nodeTo = new int[pic.width()][pic.height()];
         for (double[] suba : distTo) {
             Arrays.fill(suba, -1);
         }
-        Queue<Pos> q = new Queue();
-        q.enqueue(new Pos(top[0], 0));
+        
         int ind = 1;
         
         Pos cur;
         double topNextEn = top[1];
         int endInd = -1;
+        
+        IndexMinPQ<Double> order = new IndexMinPQ<>(3);
+        
         while(!q.isEmpty()){
             cur = q.dequeue();
             double energy = Double.POSITIVE_INFINITY;
             
             if(cur.y == distTo[0].length - 1){ // If made it to the bottom
-                double curEn;
-                for (int i = -1; i <= 1; i++) {
-                    if(!(cur.x + i < 0 || cur.x + i >= distTo.length)){
-                        curEn = energy(cur.x + i, cur.y + 1);
-                        if(curEn < energy){
-                            endInd = cur.x + i;
-                            energy = curEn;
-                        }
-                    }
-                }
+                endInd = cur.x;
                 break;
             }
             
             for (int i = -1; i <= 1; i++) { // In general
+                if(!(cur.x + i < 0 || cur.x + i >= distTo.length)){
+                    distTo[cur.x + 1][cur.y] = energy(cur.x + i, cur.y) + distTo[cur.x][cur.y];
+                    order.insert(cur.x + i, distTo[cur.x + 1][cur.y]);
+                }
+            }
+            
+            while(!order.isEmpty()){
+                q.enqueue(new Pos(order.delMin(), cur.y + 1));
+            }
+        }
+        
+        double energy;
+        for (int i = distTo.length - 1; i >= 0; --i) {
+            for (int j = -1; j <= 1; j++) {
                 
             }
         }
     }
+*/
 
     public int[] findVerticalSeam() { // sequence of indices for vertical seam
 
