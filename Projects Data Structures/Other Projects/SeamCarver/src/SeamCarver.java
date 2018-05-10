@@ -1,9 +1,6 @@
 
-import edu.princeton.cs.algs4.IndexMinPQ;
 import edu.princeton.cs.algs4.MinPQ;
 import edu.princeton.cs.algs4.Picture;
-import edu.princeton.cs.algs4.Queue;
-import java.awt.Color;
 import java.util.Arrays;
 
 /*
@@ -43,31 +40,25 @@ public class SeamCarver {
     }
 
     private double dx(int x, int y) {
-        int bounds = (x == 0 || x == (pic.width() - 1)) ? 0x0 : (x == 0) ? 0x2 : 0x1;
-        Color col;
-        if (bounds == 0x0) {
-            col = pic.get(x - 1, y);
-            Color col2 = pic.get(x + 1, y);
-            return vecS(col.getBlue() - col2.getBlue(), col.getGreen() - col2.getGreen(),
-                    col.getRed() - col2.getRed(), col.getAlpha() - col2.getAlpha());
+        if (x == 0 || x == pic.width() - 1) {
+            return 1000;
         }
-        col = bounds == 0x1 ? pic.get(1, y) : pic.get(x - 1, y);
-        return vecS(1000.0 - col.getBlue(), 1000.0 - col.getGreen(),
-                1000.0 - col.getRed(), 1000.0 - col.getAlpha());
+        int left = pic.getRGB(x - 1, y);
+        int right = pic.getRGB(x + 1, y);
+        return vecS(left & 0xFF - right & 0xFF,
+                (left & 0xFF00) >> 8 - (right & 0xFF00) >> 8,
+                (left & 0xFF0000) >> 16 - (right & 0xFF0000) >> 16);
     }
 
     private double dy(int x, int y) {
-        int bounds = (y == 0 || y == (pic.width() - 1)) ? 0x0 : (y == 0) ? 0x2 : 0x1;
-        Color col;
-        if (bounds == 0x0) {
-            col = pic.get(x, y - 1);
-            Color col2 = pic.get(x, y + 1);
-            return vecS(col.getBlue() - col2.getBlue(), col.getGreen() - col2.getGreen(),
-                    col.getRed() - col2.getRed(), col.getAlpha() - col2.getAlpha());
+        if (y == 0 || y == pic.width() - 1) {
+            return 1000;
         }
-        col = bounds == 0x1 ? pic.get(x, 1) : pic.get(x, y - 1);
-        return vecS(1000.0 - col.getBlue(), 1000.0 - col.getGreen(),
-                1000.0 - col.getRed(), 1000.0 - col.getAlpha());
+        int left = pic.getRGB(x, y - 1);
+        int right = pic.getRGB(x, y - 1);
+        return vecS(left & 0xFF - right & 0xFF,
+                (left & 0xFF00) >> 8 - (right & 0xFF00) >> 8,
+                (left & 0xFF0000) >> 16 - (right & 0xFF0000) >> 16);
     }
 
     private double vecS(double... vector) {
@@ -77,18 +68,37 @@ public class SeamCarver {
         }
         return sum;
     }
-    
-    public int[] findHorizontalSeam() {
-        int[] top = new int[pic.width()];
-        double[] topEn = new double[pic.width()];
-        IndexMinPQ<Double> sort = new IndexMinPQ<>(top.length);
-        for (int i = 0; i < top.length; i++) {
-            topEn[i] = energy(i, 0);
-            sort.insert(i, topEn[i]);
+
+    public int[] findVerticalSeam() {
+        int[][] prev = new int[pic.width()][pic.height() - 1];
+        MinPQ<Pos> queue = new MinPQ<>();
+        for (int i = 0; i < prev[0].length + 1; i++) {
+            queue.insert(new Pos(i, 0, this));
         }
-        for (int i = 0; i < top.length; i++) {
-            top[i] = sort.delMin();
+
+        for (int[] rows : prev) {
+            Arrays.fill(rows, -1);
         }
+
+        Pos cur = queue.delMin();
+        while (cur.y < prev[0].length && !queue.isEmpty()) {
+            for (int i = -1; i <= 1; i++) {
+                if (cur.x + i >= 0 && cur.x + i < prev.length && prev[cur.x + i][cur.y] == -1) {
+                    queue.insert(new Pos(cur.x + i, cur.y + 1, this, cur.energy));
+                    prev[cur.x + i][cur.y] = cur.x; // Note: prev index starts after top row
+                }
+            }
+        }
+
+        int[] seam = new int[prev[0].length + 1];
+        seam[seam.length - 1] = cur.x;
+        int ind = cur.x;
+        for (int i = seam.length - 2; i > 0; i--) {
+            ind = prev[ind][i];
+            seam[i] = ind;
+        }
+
+        return seam;
     }
 
     /*
@@ -146,19 +156,46 @@ public class SeamCarver {
             }
         }
     }
-*/
+     */
+    public int[] findHorizontalSeam() { // sequence of indices for vertical seam
+        int[][] prev = new int[pic.height()][pic.width() - 1];
+        MinPQ<Pos> queue = new MinPQ<>();
+        for (int i = 0; i < prev[0].length + 1; i++) {
+            queue.insert(new Pos(0, i, this));
+        }
 
-    public int[] findVerticalSeam() { // sequence of indices for vertical seam
+        for (int[] rows : prev) {
+            Arrays.fill(rows, -1);
+        }
 
+        Pos cur = queue.delMin();
+        while (cur.x < prev[0].length && !queue.isEmpty()) {
+            for (int i = -1; i <= 1; i++) {
+                if (cur.y + i >= 0 && cur.y + i < prev.length && prev[cur.y + i][cur.x] == -1) {
+                    queue.insert(new Pos(cur.x + 1, cur.y + i, this, cur.energy));
+                    prev[cur.y + i][cur.x] = cur.y; // Note: prev index starts after top col
+                }
+            }
+        }
+
+        int[] seam = new int[prev[0].length + 1];
+        seam[seam.length - 1] = cur.y;
+        int ind = cur.y;
+        for (int i = seam.length - 2; i > 0; i--) {
+            ind = prev[ind][i];
+            seam[i] = ind;
+        }
+
+        return seam;
     }
 
     public void removeHorizontalSeam(int[] seam) { // remove horizontal seam from current picture
         Picture np = new Picture(pic.width(), pic.height() - 1);
         for (int i = 0; i < pic.width(); i++) {
             for (int j = 0; j < pic.height(); j++) {
-                if(j < seam[i]){
+                if (j < seam[i]) {
                     np.set(i, j, pic.get(i, j));
-                }else{
+                } else {
                     np.set(i, j, pic.get(i, j + 1));
                 }
             }
@@ -170,24 +207,37 @@ public class SeamCarver {
         Picture np = new Picture(pic.width() - 1, pic.height());
         for (int i = 0; i < pic.height(); i++) {
             for (int j = 0; j < pic.width(); j++) {
-                if(j < seam[i]){
+                if (j < seam[i]) {
                     np.set(j, i, pic.get(j, i));
-                }else{
+                } else {
                     np.set(j, i, pic.get(j + 1, i));
                 }
             }
         }
         pic = np;
     }
-    
-    private class Pos{
-        
+
+    private class Pos implements Comparable<Pos> {
+
         private final int x;
         private final int y;
-        
-        public Pos(int x, int y){
+        private final double energy;
+
+        public Pos(int x, int y, SeamCarver sc) {
             this.x = x;
             this.y = y;
+            energy = sc.energy(x, y);
+        }
+
+        public Pos(int x, int y, SeamCarver sc, double parentE) {
+            this.x = x;
+            this.y = y;
+            energy = sc.energy(x, y) + parentE;
+        }
+
+        @Override
+        public int compareTo(Pos t) {
+            return Double.compare(energy, t.energy);
         }
     }
 }
