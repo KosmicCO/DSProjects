@@ -36,29 +36,26 @@ public class SeamCarver {
         if (x < 0 || y < 0 || x >= pic.width() || y >= pic.height()) {
             throw new IllegalArgumentException();
         }
+        if (x == 0 || x == pic.width() - 1 || y == 0 || y == pic.height() - 1) {
+            return 1000;
+        }
         return Math.sqrt(dx(x, y) + dy(x, y));
     }
 
     private double dx(int x, int y) {
-        if (x == 0 || x == pic.width() - 1) {
-            return 1000;
-        }
         int left = pic.getRGB(x - 1, y);
         int right = pic.getRGB(x + 1, y);
-        return vecS(left & 0xFF - right & 0xFF,
-                (left & 0xFF00) >> 8 - (right & 0xFF00) >> 8,
-                (left & 0xFF0000) >> 16 - (right & 0xFF0000) >> 16);
+        return vecS((left & 0xFF) - (right & 0xFF),
+                ((left >> 8) & 0xFF) - ((right >> 8) & 0xFF),
+                ((left >> 16) & 0xFF) - ((right >> 16) & 0xFF));
     }
 
     private double dy(int x, int y) {
-        if (y == 0 || y == pic.width() - 1) {
-            return 1000;
-        }
         int left = pic.getRGB(x, y - 1);
-        int right = pic.getRGB(x, y - 1);
-        return vecS(left & 0xFF - right & 0xFF,
-                (left & 0xFF00) >> 8 - (right & 0xFF00) >> 8,
-                (left & 0xFF0000) >> 16 - (right & 0xFF0000) >> 16);
+        int right = pic.getRGB(x, y + 1);
+        return vecS((left & 0xFF) - (right & 0xFF),
+                ((left >> 8) & 0xFF) - ((right >> 8) & 0xFF),
+                ((left >> 16) & 0xFF) - ((right >> 16) & 0xFF));
     }
 
     private double vecS(double... vector) {
@@ -239,5 +236,9 @@ public class SeamCarver {
         public int compareTo(Pos t) {
             return Double.compare(energy, t.energy);
         }
+    }
+    
+    public static void main(String[] args) {
+        
     }
 }
