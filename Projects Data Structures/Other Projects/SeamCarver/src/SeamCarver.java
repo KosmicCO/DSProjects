@@ -67,9 +67,13 @@ public class SeamCarver {
     }
 
     public int[] findVerticalSeam() {
+        if(pic.width() == 1){
+            int[] s = {0};
+            return s;
+        }
         int[][] prev = new int[pic.width()][pic.height() - 1];
         MinPQ<Pos> queue = new MinPQ<>();
-        for (int i = 0; i < prev[0].length + 1; i++) {
+        for (int i = 0; i < prev.length; i++) {
             queue.insert(new Pos(i, 0, this));
         }
 
@@ -85,6 +89,7 @@ public class SeamCarver {
                     prev[cur.x + i][cur.y] = cur.x; // Note: prev index starts after top row
                 }
             }
+            cur = queue.delMin();
         }
 
         int[] seam = new int[prev[0].length + 1];
@@ -95,69 +100,18 @@ public class SeamCarver {
             seam[i] = ind;
         }
 
+        seam[0] = seam[1];
         return seam;
     }
 
-    /*
-    public int[] findHorizontalSeam() { // sequence of indices for horizontal seam
-        int[] top = new int[pic.width()];
-        double[] topEn = new double[pic.width()];
-        IndexMinPQ<Double> sort = new IndexMinPQ<>(top.length);
-        for (int i = 0; i < top.length; i++) {
-            topEn[i] = energy(i, 0);
-            sort.insert(i, topEn[i]);
-        }
-        for (int i = 0; i < top.length; i++) {
-            top[i] = sort.delMin();
-        }
-        
-        double[][] distTo = new double[pic.width()][pic.height()];
-        int[][] nodeTo = new int[pic.width()][pic.height()];
-        for (double[] suba : distTo) {
-            Arrays.fill(suba, -1);
-        }
-        
-        int ind = 1;
-        
-        Pos cur;
-        double topNextEn = top[1];
-        int endInd = -1;
-        
-        IndexMinPQ<Double> order = new IndexMinPQ<>(3);
-        
-        while(!q.isEmpty()){
-            cur = q.dequeue();
-            double energy = Double.POSITIVE_INFINITY;
-            
-            if(cur.y == distTo[0].length - 1){ // If made it to the bottom
-                endInd = cur.x;
-                break;
-            }
-            
-            for (int i = -1; i <= 1; i++) { // In general
-                if(!(cur.x + i < 0 || cur.x + i >= distTo.length)){
-                    distTo[cur.x + 1][cur.y] = energy(cur.x + i, cur.y) + distTo[cur.x][cur.y];
-                    order.insert(cur.x + i, distTo[cur.x + 1][cur.y]);
-                }
-            }
-            
-            while(!order.isEmpty()){
-                q.enqueue(new Pos(order.delMin(), cur.y + 1));
-            }
-        }
-        
-        double energy;
-        for (int i = distTo.length - 1; i >= 0; --i) {
-            for (int j = -1; j <= 1; j++) {
-                
-            }
-        }
-    }
-     */
     public int[] findHorizontalSeam() { // sequence of indices for vertical seam
+        if(pic.height() == 1){
+            int[] s = {0};
+            return s;
+        }
         int[][] prev = new int[pic.height()][pic.width() - 1];
         MinPQ<Pos> queue = new MinPQ<>();
-        for (int i = 0; i < prev[0].length + 1; i++) {
+        for (int i = 0; i < prev.length; i++) {
             queue.insert(new Pos(0, i, this));
         }
 
@@ -173,6 +127,7 @@ public class SeamCarver {
                     prev[cur.y + i][cur.x] = cur.y; // Note: prev index starts after top col
                 }
             }
+            cur = queue.delMin();
         }
 
         int[] seam = new int[prev[0].length + 1];
@@ -182,7 +137,7 @@ public class SeamCarver {
             ind = prev[ind][i];
             seam[i] = ind;
         }
-
+        seam[0] = seam[1];
         return seam;
     }
 
@@ -237,8 +192,8 @@ public class SeamCarver {
             return Double.compare(energy, t.energy);
         }
     }
-    
+
     public static void main(String[] args) {
-        
+
     }
 }
