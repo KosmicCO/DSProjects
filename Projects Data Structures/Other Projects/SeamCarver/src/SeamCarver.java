@@ -17,7 +17,10 @@ public class SeamCarver {
     private Picture pic;
 
     public SeamCarver(Picture picture) { // create a seam carver object based on the given picture
-        pic = picture;
+        if (picture == null) {
+            throw new IllegalArgumentException();
+        }
+        pic = new Picture(picture);
     }
 
     public Picture picture() { // current picture
@@ -67,9 +70,11 @@ public class SeamCarver {
     }
 
     public int[] findVerticalSeam() {
-        if(pic.width() == 1){
-            int[] s = {0};
-            return s;
+        if (pic.height() == 1) {
+            return new int[1];
+        }
+        if (pic.width() == 1) {
+            return new int[pic.height()];
         }
         int[][] prev = new int[pic.width()][pic.height() - 1];
         MinPQ<Pos> queue = new MinPQ<>();
@@ -105,9 +110,11 @@ public class SeamCarver {
     }
 
     public int[] findHorizontalSeam() { // sequence of indices for vertical seam
-        if(pic.height() == 1){
-            int[] s = {0};
-            return s;
+        if (pic.width() == 1) {
+            return new int[1];
+        }
+        if (pic.height() == 1) {
+            return new int[pic.width()];
         }
         int[][] prev = new int[pic.height()][pic.width() - 1];
         MinPQ<Pos> queue = new MinPQ<>();
@@ -142,13 +149,14 @@ public class SeamCarver {
     }
 
     public void removeHorizontalSeam(int[] seam) { // remove horizontal seam from current picture
+        validate(seam, pic.height(), pic.width());
         Picture np = new Picture(pic.width(), pic.height() - 1);
-        for (int i = 0; i < pic.width(); i++) {
-            for (int j = 0; j < pic.height(); j++) {
-                if (j < seam[i]) {
-                    np.set(i, j, pic.get(i, j));
+        for (int i = 0; i < pic.height() - 1; i++) {
+            for (int j = 0; j < pic.width(); j++) {
+                if (i < seam[j]) {
+                    np.setRGB(j, i, pic.getRGB(j, i));
                 } else {
-                    np.set(i, j, pic.get(i, j + 1));
+                    np.setRGB(j, i, pic.getRGB(j, i + 1));
                 }
             }
         }
@@ -156,17 +164,29 @@ public class SeamCarver {
     }
 
     public void removeVerticalSeam(int[] seam) { // remove vertical seam from current picture
+        validate(seam, pic.width(), pic.height());
         Picture np = new Picture(pic.width() - 1, pic.height());
-        for (int i = 0; i < pic.height(); i++) {
-            for (int j = 0; j < pic.width(); j++) {
-                if (j < seam[i]) {
-                    np.set(j, i, pic.get(j, i));
+        for (int i = 0; i < pic.width() - 1; i++) {
+            for (int j = 0; j < pic.height(); j++) {
+                if (i < seam[j]) {
+                    np.setRGB(i, j, pic.getRGB(i, j));
                 } else {
-                    np.set(j, i, pic.get(j + 1, i));
+                    np.setRGB(i, j, pic.getRGB(i + 1, j));
                 }
             }
         }
         pic = np;
+    }
+
+    private void validate(int[] seam, int max, int len) {
+        if (seam == null || seam.length != len) {
+            throw new IllegalArgumentException();
+        }
+        for (int s : seam) {
+            if (s < 0 || s >= max) {
+                throw new IllegalArgumentException();
+            }
+        }
     }
 
     private class Pos implements Comparable<Pos> {
