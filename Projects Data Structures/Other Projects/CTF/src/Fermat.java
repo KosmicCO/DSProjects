@@ -11,10 +11,10 @@
 public class Fermat {
     
     public static void main(String[] args) {
-        int c = 3504;
+        long c = 5496093;
         System.out.println(c(c));
-        int a = 1;
-        int b = c(c) - c(a);
+        long a = 17221;
+        long b = c(c) - c(a);
         double root = Math.pow(b, 0.33333333333333333333333333333333333333);
         while(b <= 0 || Math.abs(root - ((int) root)) > 1e-10){
             if(b < 0){
@@ -29,7 +29,7 @@ public class Fermat {
         System.out.println(a + ", " + b + ", " + c);
     }
     
-    public static int c(int i){
+    public static long c(long i){
         return i * i * i;
     }
 }
